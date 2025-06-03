@@ -1,19 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "esnext",
     "module": "esnext",
-    "baseUrl": "./",
     "moduleResolution": "node",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
     "jsx": "preserve",
-    "lib": ["esnext", "dom"],
-    "types": ["vue"],
-    "allowJs": true,
-    "checkJs": false,
-    "resolveJsonModule": true
+    "types": ["vue", "vuetify"]
   },
-  "include": ["src/**/*.js", "src/**/*.vue"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.js", "src/**/*.vue", "src/**/*.json"],
+  "exclude": ["node_modules", "dist"]
 }

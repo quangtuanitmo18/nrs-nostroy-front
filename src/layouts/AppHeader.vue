@@ -1,80 +1,22 @@
 <template>
   <header class="header">
     <div class="header-wrapper">
-      <!-- <div class="header__login" v-if="isAuth">
-        <div class="header__login-info">
-          <p class="header__login-info-name">{{ user?.fio }}</p>
-        </div>
-        <v-menu>
-          <template v-slot:activator="{ props }">
-            <v-btn icon="mdi-account" size="small" v-bind="props"></v-btn>
-          </template>
-
-          <v-list min-width="200px">
-            <div v-for="(item, index) in items" :key="index">
-              <p class="header-menu-title">{{ item.title }}</p>
-              <v-list-item
-                v-for="(child, id) in item.content"
-                :key="id"
-                @click="child.handleFunc"
-                class="item-icon-small header-menu-item"
-              >
-                <template v-slot:prepend>
-                  <v-icon size="small" :icon="child.icon"></v-icon>
-                </template>
-                <v-list-item-title>{{ child.title }}</v-list-item-title>
-              </v-list-item>
-            </div>
-          </v-list>
-        </v-menu>
-      </div> -->
+      <v-container>
+        <v-row no-gutters class="">
+          <v-col cols="12" sm="6">
+            <v-responsive class="border pa-4"></v-responsive>
+          </v-col>
+        </v-row>
+      </v-container>
     </div>
   </header>
 </template>
 
-<script setup>
-// import { useRouter } from 'vue-router';
-
-// const router = useRouter();
-
-// const store = useStore();
-
-// const handleLogout = () => {
-//   store.dispatch('auth/logout').then(res => {
-//     if (res) {
-//       router.push({ name: 'login' });
-//     }
-//   });
-// };
-
-// const handleRedirect = path => {
-//   router.push({
-//     name: path,
-//   });
-// };
-
-// const items = [
-//   {
-//     title: 'Аккаунт',
-//     content: [
-//       {
-//         icon: 'mdi-badge-account-horizontal-outline',
-//         title: 'Профиль',
-//         handleFunc: () => handleRedirect('profile'),
-//       },
-//       {
-//         icon: 'mdi-logout-variant',
-//         title: 'Выйти',
-//         handleFunc: handleLogout,
-//       },
-//     ],
-//   },
-// ];
-</script>
+<script setup></script>
 
 <style lang="scss" scoped>
 .header {
-  background-image: var(--color-header);
+  background-color: var(--color-blue-light);
   position: sticky;
   top: 0;
   z-index: 10;

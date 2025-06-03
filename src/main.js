@@ -12,18 +12,8 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 // TanStack Query
-import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
-
-// Create a QueryClient with your options
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    },
-  },
-})
+import { VueQueryPlugin } from '@tanstack/vue-query'
+import { queryClient } from './configs/query'
 
 const vuetify = createVuetify({
   components,

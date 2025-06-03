@@ -5,7 +5,7 @@
 <script>
 export default {
   name: 'GlobalStyles',
-};
+}
 </script>
 
 <style lang="scss">
@@ -24,13 +24,11 @@ $body-font-family: 'Neusa Next Pro', sans-serif;
   --text-highlight: #820711;
   // Color primary in format rgb, it's important!
   --color-primary: 3, 60, 115;
-  --color-blue-dark: #415b76;
-  --color-blue-dark-2: #27394e;
-  --color-header: linear-gradient(
-    to right,
-    var(--color-blue-dark-2) 70%,
-    var(--color-blue-dark) 100%
-  );
+  --color-blue-dark: #3d7bb3;
+  --color-blue-dark-2: #2f75aa;
+
+  --color-blue-light: #eef3f9;
+
   --color-profile: linear-gradient(
     to left,
     var(--color-blue-dark-2) 70%,
