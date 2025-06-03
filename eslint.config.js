@@ -1,8 +1,8 @@
-import js from '@eslint/js';
-import vue from 'eslint-plugin-vue';
-import * as espree from 'espree';
-import globals from 'globals';
-import vueParser from 'vue-eslint-parser';
+import js from '@eslint/js'
+import vue from 'eslint-plugin-vue'
+import * as espree from 'espree'
+import globals from 'globals'
+import vueParser from 'vue-eslint-parser'
 
 export default [
   js.configs.recommended,
@@ -22,7 +22,7 @@ export default [
     rules: {
       'no-console': 'warn',
       'no-debugger': 'warn',
-      semi: ['error', 'always'],
+      semi: ['error', 'never'],
       quotes: ['error', 'single'],
     },
   },
@@ -54,4 +54,4 @@ export default [
       'no-debugger': 'warn',
     },
   },
-];
+]

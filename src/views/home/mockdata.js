@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 const list = ref([
   {
@@ -799,6 +799,6 @@ const list = ref([
     controlComment: 'Годовая инспекция',
     controlDate: '2024-12-02 00:00:00',
   },
-]);
+])
 
-export { list };
+export { list }

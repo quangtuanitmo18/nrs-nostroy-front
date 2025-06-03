@@ -13,6 +13,7 @@
     "prettier:fix": "prettier . --write"
   },
   "dependencies": {
+    "@tanstack/vue-query": "^5.79.0",
     "anonamis": "^1.7.0",
     "axios": "^1.9.0",
     "lodash": "^4.17.21",
