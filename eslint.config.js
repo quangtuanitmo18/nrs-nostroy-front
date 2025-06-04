@@ -48,8 +48,10 @@ export default [
     },
     processor: vue.processors['.vue'],
     rules: {
+      'no-unused-vars': 'warn',
       'vue/comment-directive': 0,
       'vue/no-unused-vars': 'warn',
+      'vue/no-unused-components': 'warn',
       'vue/multi-word-component-names': 'off',
       'no-debugger': 'warn',
     },

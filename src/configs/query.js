@@ -6,6 +6,12 @@ export const queryName = {
 
 export const queryClient = new QueryClient({
   defaultOptions: {
+    mutations: {
+      retry: 0, // Не повторять мутации при ошибке
+      onError: error => {
+        console.error('API Error:', error)
+      },
+    },
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,

@@ -12,9 +12,9 @@ export default {
 $body-font-family: 'Neusa Next Pro', sans-serif;
 
 :root {
-  --text-primary: #033c73;
+  --text-primary: #5382b2;
   --text-main: #505863;
-  --text-secondary: #495057aa;
+  --text-secondary: #303029;
   --secondary: #ced4da;
 
   --text-success: #73a839;
@@ -117,6 +117,58 @@ body {
   }
   @media (min-width: 1680px) {
     max-width: 1400px;
+  }
+}
+
+.container {
+  width: 100%;
+  padding: 0 16px;
+  margin-right: auto;
+  margin-left: auto;
+  background-color: var(--color-blue-light);
+
+  @media (min-width: 576px) {
+    max-width: 540px;
+  }
+
+  @media (min-width: 768px) {
+    max-width: 720px;
+  }
+
+  @media (min-width: 992px) {
+    max-width: 960px;
+  }
+
+  @media (min-width: 1200px) {
+    max-width: 1140px;
+  }
+
+  @media (min-width: 1400px) {
+    max-width: 1320px;
+  }
+
+  @media (min-width: 1600px) {
+    max-width: 1440px;
+  }
+
+  @media (min-width: 1800px) {
+    max-width: 1560px;
+  }
+
+  &.container--fluid {
+    max-width: 100%;
+  }
+
+  &.container--narrow {
+    max-width: 90%;
+
+    @media (min-width: 992px) {
+      max-width: 70%;
+    }
+  }
+
+  &.container--no-padding {
+    padding: 0;
   }
 }
 
