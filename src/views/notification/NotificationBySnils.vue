@@ -63,9 +63,9 @@ import { notificationBySnilsSchema } from '@/schemas/notification'
 import { notificationService } from '@/services/notification'
 import { ref, watch } from 'vue'
 
-import CaptchaInput from '@/components/form/input/CaptchaInput.vue'
-import PhoneInput from '@/components/form/input/PhoneNumberInput.vue'
-import TextInput from '@/components/form/input/TextInput.vue'
+import CaptchaInput from '@/components/form/CaptchaInput.vue'
+import PhoneInput from '@/components/form/PhoneNumberInput.vue'
+import TextInput from '@/components/form/TextInput.vue'
 
 // Captcha management
 const captchaUrl = ref('https://picsum.photos/180/50?random=' + Date.now())

@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/vue-query'
 import { useForm } from 'vee-validate'
-import { markRaw, ref } from 'vue'
+import { computed, markRaw, ref } from 'vue'
 
 export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
   const { onSuccess, onError, resetAfterSubmit = true } = options
@@ -8,18 +8,39 @@ export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
   const isSubmitting = ref(false)
   const submitError = ref(null)
   const isSuccess = ref(false)
+  const formValid = ref(false) // Добавляем ref для отслеживания валидности
 
-  // Sử dụng markRaw để tránh Vue reactive conversion cho schema
+  // Используем markRaw для схемы валидации
   const validationSchema = markRaw(schema)
 
-  // Setup form với Yup schema
+  // Настройка формы с Yup schema
   const { handleSubmit, resetForm, values, errors, meta, validate } = useForm({
     validationSchema,
-    validateOnMount: false, // Không validate khi mount
-    validateOnBlur: true, // Validate khi blur
-    validateOnChange: true, // Validate khi change (QUAN TRỌNG)
-    validateOnInput: false, // Không validate khi typing (tránh làm phiền user)
+    validateOnMount: true,
+    validateOnBlur: true,
+    validateOnChange: true,
     initialValues: initialValues,
+  })
+
+  // Полностью переработанная логика определения валидности формы
+  const isValid = computed(() => {
+    // 1. Проверяем наличие ошибок
+    const hasErrors = Object.keys(errors.value).length > 0
+    if (hasErrors) {
+      return false
+    }
+
+    // 2. Проверяем, что форма была заполнена (хотя бы одно поле)
+    const hasValues = Object.values(values).some(value => {
+      if (Array.isArray(value)) {
+        return value.length > 0
+      }
+      return value !== null && value !== undefined && value !== ''
+    })
+
+    // 3. Возвращаем true, если форма заполнена и нет ошибок
+    // Для форм без обязательных полей, просто проверяем meta.valid
+    return hasValues || meta.valid === true || formValid.value
   })
 
   // Setup mutation
@@ -56,8 +77,10 @@ export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
     isSuccess.value = false
     submitError.value = null
 
-    // Validate toàn bộ form trước khi submit
+    // Выполняем валидацию всей формы перед отправкой
     const { valid } = await validate()
+    formValid.value = valid // Сохраняем результат явной валидации
+
     if (!valid) {
       isSubmitting.value = false
       return
@@ -65,6 +88,16 @@ export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
 
     await mutation.mutateAsync(formValues)
   })
+
+  // Добавляем функцию для принудительной валидации и обновления состояния
+  const validateForm = async () => {
+    const { valid } = await validate()
+    formValid.value = valid
+    return valid
+  }
+
+  // Вызываем валидацию при инициализации
+  validateForm()
 
   return {
     onSubmit,
@@ -74,8 +107,8 @@ export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
     isSubmitting,
     isSuccess,
     submitError,
-    isValid: meta.valid,
-    isDirty: meta.dirty,
-    validate, // Export validate function
+    isValid,
+    isDirty: computed(() => meta.dirty),
+    validate: validateForm, // Возвращаем нашу обертку над validate
   }
 }

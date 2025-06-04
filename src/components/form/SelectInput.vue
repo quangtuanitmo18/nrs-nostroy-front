@@ -4,23 +4,25 @@
       {{ label }}
       <span v-if="required" class="text-error">*</span>
     </label>
-    <v-text-field
+    <v-select
       :id="id"
-      v-model="displayValue"
+      v-model="value"
+      :items="options"
+      item-title="label"
+      item-value="value"
       :placeholder="placeholder"
       :error-messages="shouldShowError ? errorMessage : ''"
       :disabled="disabled"
-      prefix="+7"
       variant="outlined"
       density="comfortable"
       bg-color="white"
-    ></v-text-field>
+    ></v-select>
   </div>
 </template>
 
 <script setup>
 import { useField } from 'vee-validate'
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 
 const props = defineProps({
   id: {
@@ -39,6 +41,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  options: {
+    type: Array,
+    required: true,
+  },
   required: {
     type: Boolean,
     default: false,
@@ -49,17 +55,17 @@ const props = defineProps({
   },
 })
 
-const { value, errorMessage, meta } = useField(() => props.name)
+// Get form context from parent
+const form = inject('form', null)
 
-// Handle phone formatting
-const displayValue = computed({
-  get: () => value.value || '',
-  set: val => {
-    const numericValue = val?.replace(/\D/g, '') || ''
-    value.value = numericValue
-  },
+// Connect field to form
+const { value, errorMessage, meta } = useField(() => props.name, undefined, {
+  form,
 })
 
+// Display error when:
+// 1. Field has been touched AND has error
+// 2. OR field has value and is invalid
 const shouldShowError = computed(() => {
   return errorMessage.value && (meta.touched || (value.value && !meta.valid))
 })
@@ -67,7 +73,6 @@ const shouldShowError = computed(() => {
 
 <style scoped>
 .form-field {
-  margin-bottom: 1.5rem;
 }
 
 .text-error {
