@@ -6,6 +6,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 
 import router from '@/router'
+import { vMaska } from 'maska/vue'
 
 // Vuetify
 import { createVuetify } from 'vuetify'
@@ -20,4 +21,9 @@ const vuetify = createVuetify({
   directives,
 })
 
-createApp(App).use(router).use(vuetify).use(VueQueryPlugin, { queryClient }).mount('#app')
+createApp(App)
+  .use(router)
+  .use(vuetify)
+  .directive('maska', vMaska)
+  .use(VueQueryPlugin, { queryClient })
+  .mount('#app')

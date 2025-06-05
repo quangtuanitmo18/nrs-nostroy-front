@@ -2,7 +2,7 @@
   <div class="notification-form pa-4">
     <form @submit.prevent="onSubmit">
       <!-- СНИЛС -->
-      <TextInput id="snils" name="snils" label="Укажите СНИЛС" required />
+      <TextInput id="snils" name="snils" label="Укажите СНИЛС" required :mask="maskaRules.snils" />
 
       <!-- Email -->
       <TextInput
@@ -14,7 +14,12 @@
       />
 
       <!-- Телефон -->
-      <PhoneInput id="phone" name="phone" label="Укажите контактный номер телефона" />
+      <PhoneInput
+        id="phone"
+        name="phone"
+        label="Укажите контактный номер телефона"
+        :mask="maskaRules.russianPhone"
+      />
 
       <!-- Капча -->
       <CaptchaInput
@@ -66,6 +71,7 @@ import { ref, watch } from 'vue'
 import CaptchaInput from '@/components/form/input/CaptchaInput.vue'
 import PhoneInput from '@/components/form/input/PhoneNumberInput.vue'
 import TextInput from '@/components/form/input/TextInput.vue'
+import maskaRules from '@/utils/RulesMaskaInput'
 
 // Captcha management
 const captchaUrl = ref('https://picsum.photos/180/50?random=' + Date.now())
@@ -82,7 +88,6 @@ const initialValuesForm = {
   snils: '',
   email: '',
   phone: '',
-  captcha: '',
 }
 
 const { onSubmit, isSubmitting, isSuccess, submitError, isValid, errors } = useFormSubmit(

@@ -26,7 +26,12 @@
       />
 
       <!-- Phone -->
-      <PhoneInput id="phone" name="phone" label="Укажите контактный номер телефона" />
+      <PhoneInput
+        id="phone"
+        name="phone"
+        label="Укажите контактный номер телефона"
+        :mask="maskaRules.russianPhone"
+      />
 
       <!-- Captcha -->
       <CaptchaInput
@@ -80,6 +85,7 @@ import DateInput from '@/components/form/input/DateInput.vue'
 import PhoneInput from '@/components/form/input/PhoneNumberInput.vue'
 import SelectInput from '@/components/form/input/SelectInput.vue'
 import TextInput from '@/components/form/input/TextInput.vue'
+import maskaRules from '@/utils/RulesMaskaInput'
 
 // Regions options
 const regionOptions = [

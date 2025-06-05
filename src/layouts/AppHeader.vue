@@ -5,7 +5,9 @@
       <v-row no-gutters align="center" justify="space-between">
         <!-- Logo and Title Section -->
         <v-col cols="auto" class="d-flex align-center ga-4" sm="6">
-          <Image :src="logo_head" width="170" cover alt="НОСТРОЙ" class="flex-shrink-0" />
+          <div @click="handleNavigateToHome" class="cursor-pointer">
+            <v-img :src="logo_head" :width="170" aspect-ratio="16/9" cover></v-img>
+          </div>
           <div class="d-flex flex-column">
             <h1 class="header__title--primary">Национальный реестр специалистов</h1>
             <span class="header__title--secondary"> в области строительства </span>
@@ -32,7 +34,7 @@
             variant="elevated"
             prepend-icon="mdi-arrow-left"
             size="large"
-            @click="handleNavigateToNotification"
+            @click="handleNavigateToHome"
           >
             Вернуться к реестру
           </v-btn>
@@ -44,7 +46,6 @@
 
 <script setup>
 import { logo_head } from '@/assets/images/index'
-import Image from '@/components/image/Image.vue'
 import { path } from '@/configs/path'
 import { useRouter } from 'vue-router'
 
@@ -52,6 +53,10 @@ const router = useRouter()
 
 const handleNavigateToNotification = () => {
   router.push({ name: path.notification.name })
+}
+
+const handleNavigateToHome = () => {
+  router.push({ name: path.home.name })
 }
 </script>
 
