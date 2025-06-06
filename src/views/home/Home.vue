@@ -11,24 +11,29 @@
     </v-col>
   </v-row>
   <div class="my-6">
-    <AnonamisTableFilter
-      :columns="columns"
-      :items="list"
-      :pagination="pagination"
-      :sort="sort"
-      :search="search"
-      :searchHint="searchHint"
-      :countFilters="countFilters"
-      :setPage="setPage"
-      :setSort="setSort"
-      :setFilter="setFilter"
-      :setSearch="setSearch"
-      @clear-all-settings="handleClearAllSettings"
-    ></AnonamisTableFilter>
+    <template v-if="!isPendingGetSpecialists">
+      <AnonamisTableFilter
+        :columns="columns"
+        :items="list"
+        :pagination="pagination"
+        :sort="sort"
+        :search="search"
+        :searchHint="searchHint"
+        :countFilters="countFilters"
+        :setPage="setPage"
+        :setSort="setSort"
+        :setFilter="setFilter"
+        :setSearch="setSearch"
+        @clear-all-settings="handleClearAllSettings"
+      ></AnonamisTableFilter>
+    </template>
+
+    <LoadingSpin v-else></LoadingSpin>
   </div>
 </template>
 
 <script setup>
+import LoadingSpin from '@/components/loading/LoadingSpin.vue'
 import {
   FILTER_TYPE_DATE_TIME,
   FILTER_TYPE_EQ,
@@ -40,33 +45,19 @@ import {
 import { useGetListSpecialists } from '@/services/notification.js'
 import { AnonamisTableFilter } from 'anonamis'
 import { computed, ref, shallowRef, toRaw, watch } from 'vue'
-import { list } from './mockdata.js'
 
+const list = ref([])
 const page = ref(1)
 const search = ref('')
 const filters = shallowRef({})
 const sort = shallowRef([])
-// Example sort
-// const sort = [{
-//   sortBy: "id",
-//   sortType: "asc"
-// }]
 
 // query specialists
-const { data, mutateGetSpecialists } = useGetListSpecialists()
-
-console.log(data)
+const { mutateGetSpecialists, isPendingGetSpecialists } = useGetListSpecialists()
 
 const searchHint = 'Поиск по ФИО и Идентификационному номеру'
 
-const size = 5
-
-const pagination = shallowRef({
-  count: list.value.length,
-  pages: Math.ceil(list.value.length / size),
-  page: 1,
-  size: size,
-})
+const pagination = shallowRef({})
 
 console.log(toRaw(filters.value))
 
@@ -215,25 +206,30 @@ const setFilter = dataFilters => {
 watch(
   [page, sort, filters, search],
   () => {
-    // employeeList({
-    //   page: page.value,
-    //   row_page: size.value,
-    //   filters: filters.value,
-    //   // convert sort to object
-    //   sort_by: sort.value.reduce((acc, i) => ({...acc, [i.sortBy]: i.sortType}), {}),
-    //   search_string: search.value
-    // }).then(res => {
-    //   list.value = res.items
-    //   pagination.value = {
-    //     count: res.data_header.count,
-    //     pages: res.data_header.count_pages,
-    //     page: res.data_header.page,
-    //     size: res.data_header.row_page,
-    //   }
-    // }).finally(() => {
-    //   loading.value = false
-    // })
-    mutateGetSpecialists()
+    const requestParams = {
+      page: page.value,
+      row_page: pagination.value.size,
+      filters: filters.value,
+      // Преобразуем массив сортировок в объект
+      sort_by: sort.value.reduce((acc, i) => ({ ...acc, [i.sortBy]: i.sortType }), {}),
+      search_string: search.value,
+    }
+
+    mutateGetSpecialists(requestParams, {
+      onSuccess: data => {
+        console.log(data)
+        list.value = data.data.items
+        pagination.value = {
+          count: data.data_header?.count || 0,
+          pages: data.data_header?.count_pages || 1,
+          page: data.data_header?.page || 1,
+          size: data.data_header?.row_page,
+        }
+      },
+      onError: error => {
+        console.error('Ошибка при получении данных специалистов:', error)
+      },
+    })
   },
   { immediate: true }
 )
