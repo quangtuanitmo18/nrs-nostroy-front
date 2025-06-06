@@ -6,11 +6,11 @@
     </label>
     <v-text-field
       :id="id"
-      v-model="displayValue"
+      v-model="value"
       :placeholder="placeholder"
       :error-messages="shouldShowError ? errorMessage : ''"
       :disabled="disabled"
-      prefix="+7"
+      v-maska="mask"
       variant="outlined"
       density="comfortable"
       bg-color="white"
@@ -47,18 +47,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  mask: {
+    type: Object,
+    default: null,
+  },
 })
 
 const { value, errorMessage, meta } = useField(() => props.name)
-
-// Handle phone formatting
-const displayValue = computed({
-  get: () => value.value || '',
-  set: val => {
-    const numericValue = val?.replace(/\D/g, '') || ''
-    value.value = numericValue
-  },
-})
 
 const shouldShowError = computed(() => {
   return errorMessage.value && (meta.touched || (value.value && !meta.valid))

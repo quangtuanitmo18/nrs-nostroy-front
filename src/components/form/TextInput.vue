@@ -11,6 +11,7 @@
       :error-messages="shouldShowError ? errorMessage : ''"
       :disabled="disabled"
       :type="type"
+      v-maska="mask"
       variant="outlined"
       density="comfortable"
       bg-color="white"
@@ -50,6 +51,10 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false,
+  },
+  mask: {
+    type: Object,
+    default: null,
   },
 })
 

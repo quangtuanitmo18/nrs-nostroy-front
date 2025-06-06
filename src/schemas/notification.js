@@ -1,14 +1,12 @@
-import { isValid, parseISO } from 'date-fns'
 import { object, string } from 'yup'
+import { emailRule, phonenumberRussianRule } from './common'
 
 export const notificationBySnilsSchema = object({
   snils: string()
     .required('СНИЛС обязателен для заполнения')
     .matches(/^\d{3}-\d{3}-\d{3} \d{2}$/, 'СНИЛС должен быть в формате XXX-XXX-XXX XX'),
-  email: string()
-    .required('Email обязателен для заполнения')
-    .email('Введите корректный email адрес'),
-  phone: string().optional(),
+  email: emailRule,
+  phone: phonenumberRussianRule,
   // captcha: string().required('Код с картинки обязателен для заполнения'),
 })
 
@@ -19,19 +17,8 @@ export const notificationByNameSchema = object({
     .min(5, 'ФИО должно содержать минимум 5 символов'),
   birthDate: string()
     .required('Дата рождения обязательна для заполнения')
-    .test('valid-date', 'Неверный формат даты', function (value) {
-      if (!value) return true
-      return isValid(parseISO(value))
-    })
-    .test('not-future', 'Дата не может быть в будущем', function (value) {
-      if (!value) return true
-      const date = parseISO(value)
-      const today = new Date()
-      return date <= today
-    }),
-  email: string()
-    .required('Email обязателен для заполнения')
-    .email('Введите корректный email адрес'),
-  phone: string().optional(),
+    .matches(/^\d{4}-\d{2}-\d{2}$/, 'Неверный формат даты'),
+  email: emailRule,
+  phone: phonenumberRussianRule,
   // captcha: string().required('Код с картинки обязателен для заполнения'),
 })
