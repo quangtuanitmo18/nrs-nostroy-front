@@ -10,8 +10,14 @@
       </div>
     </v-col>
   </v-row>
-  <div class="my-6">
-    <template v-if="!isPendingGetSpecialists">
+  <div class="my-6 position-relative">
+    <!-- Показываем таблицу всегда кроме первой загрузки -->
+    <template v-if="!isLoadingSpecialists || list.length > 0">
+      <!-- Оверлей индикатора загрузки при фильтрации -->
+      <div v-if="isFetchingSpecialists && !isLoadingSpecialists" class="filter-loading-overlay">
+        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      </div>
+
       <AnonamisTableFilter
         :columns="columns"
         :items="list"
@@ -28,6 +34,7 @@
       ></AnonamisTableFilter>
     </template>
 
+    <!-- Спиннер только при первой загрузке -->
     <LoadingSpin v-else></LoadingSpin>
   </div>
 </template>
@@ -52,8 +59,19 @@ const search = ref('')
 const filters = shallowRef({})
 const sort = shallowRef([])
 
+// Объект для параметров запроса
+const queryParams = ref({
+  page: 1,
+  row_page: 10,
+  filters: {},
+  sort_by: {},
+  search_string: '',
+})
+
 // query specialists
-const { mutateGetSpecialists, isPendingGetSpecialists } = useGetListSpecialists()
+// Используем useQuery вместо useMutation
+const { data, isPendingGetSpecialists, isLoadingSpecialists, isFetchingSpecialists } =
+  useGetListSpecialists(queryParams)
 
 const searchHint = 'Поиск по ФИО и Идентификационному номеру'
 
@@ -203,33 +221,29 @@ const setFilter = dataFilters => {
   }, {})
 }
 
-watch(
-  [page, sort, filters, search],
-  () => {
-    const requestParams = {
-      page: page.value,
-      row_page: pagination.value.size,
-      filters: filters.value,
-      // Преобразуем массив сортировок в объект
-      sort_by: sort.value.reduce((acc, i) => ({ ...acc, [i.sortBy]: i.sortType }), {}),
-      search_string: search.value,
-    }
+watch([page, sort, filters, search], () => {
+  queryParams.value = {
+    page: page.value,
+    row_page: pagination.value.size || 10,
+    filters: filters.value,
+    sort_by: sort.value.reduce((acc, i) => ({ ...acc, [i.sortBy]: i.sortType }), {}),
+    search_string: search.value,
+  }
+})
 
-    mutateGetSpecialists(requestParams, {
-      onSuccess: data => {
-        console.log(data)
-        list.value = data.data.items
-        pagination.value = {
-          count: data.data_header?.count || 0,
-          pages: data.data_header?.count_pages || 1,
-          page: data.data_header?.page || 1,
-          size: data.data_header?.row_page,
-        }
-      },
-      onError: error => {
-        console.error('Ошибка при получении данных специалистов:', error)
-      },
-    })
+// Обновляем список и пагинацию при получении новых данных
+watch(
+  data,
+  newData => {
+    if (newData && newData.data) {
+      list.value = newData.data.items || []
+      pagination.value = {
+        count: newData.data_header?.count || 0,
+        pages: newData.data_header?.count_pages || 1,
+        page: newData.data_header?.page || 1,
+        size: newData.data_header?.row_page || 10,
+      }
+    }
   },
   { immediate: true }
 )
