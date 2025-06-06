@@ -14,8 +14,10 @@
   },
   "dependencies": {
     "@tanstack/vue-query": "^5.79.0",
+    "@vuepic/vue-datepicker": "^11.0.1",
     "anonamis": "^1.7.0",
     "axios": "^1.9.0",
+    "date-fns": "^4.1.0",
     "lodash": "^4.17.21",
     "maska": "^3.1.1",
     "path": "^0.12.7",

@@ -62,7 +62,6 @@ const shouldShowError = computed(() => {
 
 <style scoped>
 .form-field {
-  margin-bottom: 1.5rem;
 }
 
 .text-error {

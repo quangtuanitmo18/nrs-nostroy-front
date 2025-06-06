@@ -14,7 +14,7 @@
       <TextInput id="fullName" name="fullName" label="Фамилия, Имя, Отчество" required />
 
       <!-- Date of Birth -->
-      <DateInput id="birthDate" name="birthDate" label="Дата рождения" required />
+      <DatePicker id="birthDate" name="birthDate" label="Дата рождения" required />
 
       <!-- Email -->
       <TextInput
@@ -34,14 +34,14 @@
       />
 
       <!-- Captcha -->
-      <CaptchaInput
+      <!-- <CaptchaInput
         id="captcha"
         name="captcha"
         label="Укажите код с картинки"
         :captcha-url="captchaUrl"
         @refresh-captcha="refreshCaptcha"
         required
-      />
+      /> -->
 
       <!-- Submit Button -->
       <div class="d-flex">
@@ -62,7 +62,6 @@
         <span class="text-error">*</span> - отмечены поля обязательные для заполнения
       </div>
 
-      <!-- Snackbars -->
       <v-snackbar v-model="showSuccessMessage" color="success" timeout="3000">
         Уведомление успешно отправлено
       </v-snackbar>
@@ -78,13 +77,11 @@
 import { useFormSubmit } from '@/composables/useFormSubmit'
 import { notificationByNameSchema } from '@/schemas/notification'
 import { notificationService } from '@/services/notification'
-import { provide, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
-import CaptchaInput from '@/components/form/input/CaptchaInput.vue'
-import DateInput from '@/components/form/input/DateInput.vue'
-import PhoneInput from '@/components/form/input/PhoneNumberInput.vue'
-import SelectInput from '@/components/form/input/SelectInput.vue'
-import TextInput from '@/components/form/input/TextInput.vue'
+import PhoneInput from '@/components/form/PhoneNumberInput.vue'
+import SelectInput from '@/components/form/SelectInput.vue'
+import TextInput from '@/components/form/TextInput.vue'
 import maskaRules from '@/utils/RulesMaskaInput'
 
 // Regions options
@@ -94,10 +91,9 @@ const regionOptions = [
   { value: 'Астраханская область', label: 'Астраханская область' },
   { value: 'Белгородская область', label: 'Белгородская область' },
   { value: 'Брянская область', label: 'Брянская область' },
-  // Thêm các vùng khác của Nga
   { value: 'Москва', label: 'Москва' },
   { value: 'Санкт-Петербург', label: 'Санкт-Петербург' },
-  // ...các vùng khác
+  // Add more regions as needed
 ]
 
 // Captcha management
@@ -117,10 +113,10 @@ const initialValuesForm = {
   birthDate: '',
   email: '',
   phone: '',
-  captcha: '',
+  // captcha: '',
 }
 
-const { onSubmit, isSubmitting, isSuccess, submitError, isValid, errors, form } = useFormSubmit(
+const { onSubmit, isSubmitting, isSuccess, submitError, isValid, errors } = useFormSubmit(
   initialValuesForm,
   notificationByNameSchema,
   notificationService.submitNotificationByName,
@@ -139,15 +135,20 @@ const { onSubmit, isSubmitting, isSuccess, submitError, isValid, errors, form } 
   }
 )
 
-// Provide form context để components con có thể sử dụng
-provide('form', form)
-
 watch(
   () => submitError.value,
   newVal => {
     showErrorMessage.value = Boolean(newVal)
   }
 )
+
+watch(
+  () => errors.value,
+  newErrors => {
+    console.log('Errors updated:', newErrors)
+    console.log(isValid)
+  }
+) // Watch for error messages
 </script>
 
 <style scoped>
