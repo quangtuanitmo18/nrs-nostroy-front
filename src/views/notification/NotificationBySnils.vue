@@ -63,10 +63,7 @@
 </template>
 
 <script setup>
-import { useFormSubmit } from '@/composables/useFormSubmit'
-import { notificationBySnilsSchema } from '@/schemas/notification'
-import { notificationService } from '@/services/notification'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 import CaptchaInput from '@/components/form/CaptchaInput.vue'
 import PhoneInput from '@/components/form/PhoneNumberInput.vue'
@@ -90,36 +87,36 @@ const initialValuesForm = {
   phone: '',
 }
 
-const { onSubmit, isSubmitting, isSuccess, submitError, isValid, errors } = useFormSubmit(
-  initialValuesForm,
-  notificationBySnilsSchema,
-  notificationService.submitNotification,
-  {
-    onSuccess: () => {
-      showSuccessMessage.value = true
-      refreshCaptcha()
-    },
-    onError: error => {
-      showErrorMessage.value = true
+// const { onSubmit, isSubmitting, isSuccess, submitError, isValid, errors } = useFormSubmit(
+//   initialValuesForm,
+//   notificationBySnilsSchema,
+//   notificationService.submitNotification,
+//   {
+//     onSuccess: () => {
+//       showSuccessMessage.value = true
+//       refreshCaptcha()
+//     },
+//     onError: error => {
+//       showErrorMessage.value = true
 
-      if (error?.response?.data?.field === 'captcha') {
-        refreshCaptcha()
-      }
-    },
-  }
-)
+//       if (error?.response?.data?.field === 'captcha') {
+//         refreshCaptcha()
+//       }
+//     },
+//   }
+// )
 
-watch(
-  () => errors.value,
-  newErrors => console.log('Errors updated:', newErrors)
-) // Watch for error messages
+// watch(
+//   () => errors.value,
+//   newErrors => console.log('Errors updated:', newErrors)
+// ) // Watch for error messages
 
-watch(
-  () => submitError.value,
-  newVal => {
-    showErrorMessage.value = Boolean(newVal)
-  }
-)
+// watch(
+//   () => submitError.value,
+//   newVal => {
+//     showErrorMessage.value = Boolean(newVal)
+//   }
+// )
 </script>
 
 <style scoped>

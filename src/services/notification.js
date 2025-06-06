@@ -1,20 +1,19 @@
-import { post } from '@/configs/http'
+import { specialistApi } from '@/apis/specialists'
+// import { queryName } from '@/configs/query'
+import { useMutation } from '@tanstack/vue-query'
 
-export const notificationService = {
-  /**
-   * Отправка запроса на уведомление
-   * @param {Object} data - Данные формы
-   * @returns {Promise}
-   */
-  submitNotification: async data => {
-    return post('/api/notifications', data)
-  },
+export const useGetListSpecialists = () => {
+  const { data, isPending, isSuccess, isError, mutateAsync, mutate } = useMutation({
+    // mutationKey: [queryName.listSpecialists],
+    mutationFn: (params = {}) => specialistApi.getSpecialists(params),
+  })
 
-  // /**
-  //  * Получение новой капчи
-  //  * @returns {Promise}
-  //  */
-  // getCaptcha: async () => {
-  //   return get('/api/captcha')
-  // },
+  return {
+    data,
+    isPendingGetSpecialists: isPending,
+    isSuccessGetSpecialists: isSuccess,
+    isErrorGetSpecialists: isError,
+    mutateAsyncGetSpecialists: mutateAsync,
+    mutateGetSpecialists: mutate,
+  }
 }

@@ -74,10 +74,7 @@
 </template>
 
 <script setup>
-import { useFormSubmit } from '@/composables/useFormSubmit'
-import { notificationByNameSchema } from '@/schemas/notification'
-import { notificationService } from '@/services/notification'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 import PhoneInput from '@/components/form/PhoneNumberInput.vue'
 import SelectInput from '@/components/form/SelectInput.vue'
@@ -116,39 +113,39 @@ const initialValuesForm = {
   // captcha: '',
 }
 
-const { onSubmit, isSubmitting, isSuccess, submitError, isValid, errors } = useFormSubmit(
-  initialValuesForm,
-  notificationByNameSchema,
-  notificationService.submitNotificationByName,
-  {
-    onSuccess: () => {
-      showSuccessMessage.value = true
-      refreshCaptcha()
-    },
-    onError: error => {
-      showErrorMessage.value = true
+// const { onSubmit, isSubmitting, isSuccess, submitError, isValid, errors } = useFormSubmit(
+//   initialValuesForm,
+//   notificationByNameSchema,
+//   notificationService.submitNotificationByName,
+//   {
+//     onSuccess: () => {
+//       showSuccessMessage.value = true
+//       refreshCaptcha()
+//     },
+//     onError: error => {
+//       showErrorMessage.value = true
 
-      if (error?.response?.data?.field === 'captcha') {
-        refreshCaptcha()
-      }
-    },
-  }
-)
+//       if (error?.response?.data?.field === 'captcha') {
+//         refreshCaptcha()
+//       }
+//     },
+//   }
+// )
 
-watch(
-  () => submitError.value,
-  newVal => {
-    showErrorMessage.value = Boolean(newVal)
-  }
-)
+// watch(
+//   () => submitError.value,
+//   newVal => {
+//     showErrorMessage.value = Boolean(newVal)
+//   }
+// )
 
-watch(
-  () => errors.value,
-  newErrors => {
-    console.log('Errors updated:', newErrors)
-    console.log(isValid)
-  }
-) // Watch for error messages
+// watch(
+//   () => errors.value,
+//   newErrors => {
+//     console.log('Errors updated:', newErrors)
+//     console.log(isValid)
+//   }
+// ) // Watch for error messages
 </script>
 
 <style scoped>

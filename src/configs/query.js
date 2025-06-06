@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/vue-query'
 
 export const queryName = {
-  testApi: 'testApi',
+  listSpecialists: ' listSpecialists',
 }
 
 export const queryClient = new QueryClient({

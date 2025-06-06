@@ -37,8 +37,9 @@ import {
   SPECIALIST_WORK_TYPE,
   SPECIALLIST_STATUS,
 } from '@/constants/filter.js'
+import { useGetListSpecialists } from '@/services/notification.js'
 import { AnonamisTableFilter } from 'anonamis'
-import { computed, ref, shallowRef, toRaw } from 'vue'
+import { computed, ref, shallowRef, toRaw, watch } from 'vue'
 import { list } from './mockdata.js'
 
 const page = ref(1)
@@ -50,6 +51,11 @@ const sort = shallowRef([])
 //   sortBy: "id",
 //   sortType: "asc"
 // }]
+
+// query specialists
+const { data, mutateGetSpecialists } = useGetListSpecialists()
+
+console.log(data)
 
 const searchHint = 'Поиск по ФИО и Идентификационному номеру'
 
@@ -206,24 +212,29 @@ const setFilter = dataFilters => {
   }, {})
 }
 
-// watch([page, sort, filters, search], () => {
-//   employeeList({
-//     page: page.value,
-//     row_page: size.value,
-//     filters: filters.value,
-//     // convert sort to object
-//     sort_by: sort.value.reduce((acc, i) => ({...acc, [i.sortBy]: i.sortType}), {}),
-//     search_string: search.value
-//   }).then(res => {
-//     list.value = res.items
-//     pagination.value = {
-//       count: res.data_header.count,
-//       pages: res.data_header.count_pages,
-//       page: res.data_header.page,
-//       size: res.data_header.row_page,
-//     }
-//   }).finally(() => {
-//     loading.value = false
-//   })
-// }, { immediate: true })
+watch(
+  [page, sort, filters, search],
+  () => {
+    // employeeList({
+    //   page: page.value,
+    //   row_page: size.value,
+    //   filters: filters.value,
+    //   // convert sort to object
+    //   sort_by: sort.value.reduce((acc, i) => ({...acc, [i.sortBy]: i.sortType}), {}),
+    //   search_string: search.value
+    // }).then(res => {
+    //   list.value = res.items
+    //   pagination.value = {
+    //     count: res.data_header.count,
+    //     pages: res.data_header.count_pages,
+    //     page: res.data_header.page,
+    //     size: res.data_header.row_page,
+    //   }
+    // }).finally(() => {
+    //   loading.value = false
+    // })
+    mutateGetSpecialists()
+  },
+  { immediate: true }
+)
 </script>
