@@ -32,7 +32,7 @@ const routes = [
     name: 'not-found',
     meta: { layout: 'simple-layout' },
     component: ErrorPage,
-    props: { code: 404, message: 'Страница не найдена' },
+    props: { code: 404, title: 'Страница не найдена', message: 'Страница не найдена' },
   },
 ]
 
