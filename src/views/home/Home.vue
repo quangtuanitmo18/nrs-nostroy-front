@@ -10,25 +10,37 @@
       </div>
     </v-col>
   </v-row>
-  <div class="my-6">
-    <AnonamisTableFilter
-      :columns="columns"
-      :items="list"
-      :pagination="pagination"
-      :sort="sort"
-      :search="search"
-      :searchHint="searchHint"
-      :countFilters="countFilters"
-      :setPage="setPage"
-      :setSort="setSort"
-      :setFilter="setFilter"
-      :setSearch="setSearch"
-      @clear-all-settings="handleClearAllSettings"
-    ></AnonamisTableFilter>
+  <div class="my-6 position-relative">
+    <!-- Показываем таблицу всегда кроме первой загрузки -->
+    <template v-if="!isLoadingSpecialists || list.length > 0">
+      <!-- Оверлей индикатора загрузки при фильтрации -->
+      <div v-if="isFetchingSpecialists && !isLoadingSpecialists" class="filter-loading-overlay">
+        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      </div>
+
+      <AnonamisTableFilter
+        :columns="columns"
+        :items="list"
+        :pagination="pagination"
+        :sort="sort"
+        :search="search"
+        :searchHint="searchHint"
+        :countFilters="countFilters"
+        :setPage="setPage"
+        :setSort="setSort"
+        :setFilter="setFilter"
+        :setSearch="setSearch"
+        @clear-all-settings="handleClearAllSettings"
+      ></AnonamisTableFilter>
+    </template>
+
+    <!-- Спиннер только при первой загрузке -->
+    <LoadingSpin v-else></LoadingSpin>
   </div>
 </template>
 
 <script setup>
+import LoadingSpin from '@/components/loading/LoadingSpin.vue'
 import {
   FILTER_TYPE_DATE_TIME,
   FILTER_TYPE_EQ,
@@ -37,30 +49,33 @@ import {
   SPECIALIST_WORK_TYPE,
   SPECIALLIST_STATUS,
 } from '@/constants/filter.js'
+import { useGetListSpecialists } from '@/services/notification.js'
 import { AnonamisTableFilter } from 'anonamis'
-import { computed, ref, shallowRef, toRaw } from 'vue'
-import { list } from './mockdata.js'
+import { computed, ref, shallowRef, toRaw, watch } from 'vue'
 
+const list = ref([])
 const page = ref(1)
 const search = ref('')
 const filters = shallowRef({})
 const sort = shallowRef([])
-// Example sort
-// const sort = [{
-//   sortBy: "id",
-//   sortType: "asc"
-// }]
+
+// Объект для параметров запроса
+const queryParams = ref({
+  page: 1,
+  row_page: 10,
+  filters: {},
+  sort_by: {},
+  search_string: '',
+})
+
+// query specialists
+// Используем useQuery вместо useMutation
+const { data, isPendingGetSpecialists, isLoadingSpecialists, isFetchingSpecialists } =
+  useGetListSpecialists(queryParams)
 
 const searchHint = 'Поиск по ФИО и Идентификационному номеру'
 
-const size = 5
-
-const pagination = shallowRef({
-  count: list.value.length,
-  pages: Math.ceil(list.value.length / size),
-  page: 1,
-  size: size,
-})
+const pagination = shallowRef({})
 
 console.log(toRaw(filters.value))
 
@@ -206,24 +221,30 @@ const setFilter = dataFilters => {
   }, {})
 }
 
-// watch([page, sort, filters, search], () => {
-//   employeeList({
-//     page: page.value,
-//     row_page: size.value,
-//     filters: filters.value,
-//     // convert sort to object
-//     sort_by: sort.value.reduce((acc, i) => ({...acc, [i.sortBy]: i.sortType}), {}),
-//     search_string: search.value
-//   }).then(res => {
-//     list.value = res.items
-//     pagination.value = {
-//       count: res.data_header.count,
-//       pages: res.data_header.count_pages,
-//       page: res.data_header.page,
-//       size: res.data_header.row_page,
-//     }
-//   }).finally(() => {
-//     loading.value = false
-//   })
-// }, { immediate: true })
+watch([page, sort, filters, search], () => {
+  queryParams.value = {
+    page: page.value,
+    row_page: pagination.value.size || 10,
+    filters: filters.value,
+    sort_by: sort.value.reduce((acc, i) => ({ ...acc, [i.sortBy]: i.sortType }), {}),
+    search_string: search.value,
+  }
+})
+
+// Обновляем список и пагинацию при получении новых данных
+watch(
+  data,
+  newData => {
+    if (newData && newData.data) {
+      list.value = newData.data.items || []
+      pagination.value = {
+        count: newData.data_header?.count || 0,
+        pages: newData.data_header?.count_pages || 1,
+        page: newData.data_header?.page || 1,
+        size: newData.data_header?.row_page || 10,
+      }
+    }
+  },
+  { immediate: true }
+)
 </script>

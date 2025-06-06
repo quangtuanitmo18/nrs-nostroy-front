@@ -1,20 +1,25 @@
-import { post } from '@/configs/http'
+import { specialistApi } from '@/apis/specialists'
+import { queryName } from '@/configs/query'
+import { useQuery } from '@tanstack/vue-query'
+import { ref } from 'vue'
 
-export const notificationService = {
-  /**
-   * Отправка запроса на уведомление
-   * @param {Object} data - Данные формы
-   * @returns {Promise}
-   */
-  submitNotification: async data => {
-    return post('/api/notifications', data)
-  },
+export const useGetListSpecialists = (queryParamsRef = ref({})) => {
+  // Здесь мы используем useQuery с POST-запросом
+  const queryResult = useQuery({
+    queryKey: [queryName.listSpecialists, queryParamsRef],
+    queryFn: () => specialistApi.getSpecialists(queryParamsRef.value),
+    keepPreviousData: true, // Сохраняем предыдущие данные во время загрузки
+    staleTime: 10000, // Данные считаются актуальными 10 секунд
+    refetchOnWindowFocus: false,
+  })
 
-  // /**
-  //  * Получение новой капчи
-  //  * @returns {Promise}
-  //  */
-  // getCaptcha: async () => {
-  //   return get('/api/captcha')
-  // },
+  return {
+    data: queryResult.data,
+    isPendingGetSpecialists: queryResult.isPending,
+    isLoadingSpecialists: queryResult.isLoading, // Только при первой загрузке
+    isFetchingSpecialists: queryResult.isFetching, // При любом обновлении данных
+    isSuccessGetSpecialists: queryResult.isSuccess,
+    isErrorGetSpecialists: queryResult.isError,
+    refetchSpecialists: queryResult.refetch,
+  }
 }
