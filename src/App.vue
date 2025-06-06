@@ -8,9 +8,9 @@
 
 <script setup>
 // import GlobalStyles directly from its file (update the path if needed)
-import GlobalStyles from '@/components/GlobalStyles.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import SimpleLayout from '@/layouts/SimpleLayout.vue'
+import GlobalStyles from '@/styles/GlobalStyles.vue'
 
 import ErrorBoundary from '@/components/ErrorBoundary.vue'
 

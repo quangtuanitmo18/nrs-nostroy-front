@@ -73,6 +73,15 @@ input {
   font-family:
     'Neusa Next Pro',
     sans serif !important;
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: none;
+  }
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 ul {
