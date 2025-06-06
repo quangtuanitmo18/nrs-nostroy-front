@@ -21,7 +21,18 @@ const vuetify = createVuetify({
   directives,
 })
 
-createApp(App)
+const app = createApp(App)
+
+// Глобальный обработчик ошибок
+app.config.errorHandler = (err, instance, info) => {
+  console.error('Глобальная ошибка:', err)
+  console.error('Экземпляр компонента:', instance)
+  console.error('Информация:', info)
+
+  // Можно также отправить ошибку в систему аналитики или на сервер
+}
+
+app
   .use(router)
   .use(vuetify)
   .directive('maska', vMaska)
