@@ -1,6 +1,8 @@
-export const SNILS_MASK = '###-###-### ##'
+const SNILS_MASK = '###-###-### ##'
 
-export const RUSSIAN_PHONE_MASK = '+7 (###) (###) ##-##'
+const RUSSIAN_PHONE_MASK = '+7 (###) (###) ##-##'
+
+const CAPTCHA_CODE_MASK = 'SSSSSS'
 
 export const createMaskaConfig = (mask, eager = false, reversed = false) => {
   return {
@@ -20,6 +22,7 @@ export const createMaskaConfig = (mask, eager = false, reversed = false) => {
 export const maskaRules = {
   snils: createMaskaConfig(SNILS_MASK),
   russianPhone: createMaskaConfig(RUSSIAN_PHONE_MASK),
+  captchaCode: createMaskaConfig(CAPTCHA_CODE_MASK),
 }
 
 export default maskaRules

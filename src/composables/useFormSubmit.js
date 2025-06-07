@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-vars */
 import { useMutation } from '@tanstack/vue-query'
 import { useForm } from 'vee-validate'
 import { computed, markRaw, ref } from 'vue'
 
 export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
-  const { onSuccess, onError, resetAfterSubmit = true } = options
+  const { onSuccess, onError, resetAfterSubmit = true, extraData = {} } = options
 
   const isSubmitting = ref(false)
   const submitError = ref(null)
@@ -46,7 +47,7 @@ export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
   // Setup mutation
   const mutation = useMutation({
     mutationFn: submitFn,
-    onSuccess: data => {
+    onSuccess: (data, variables) => {
       isSuccess.value = true
       submitError.value = null
 
@@ -58,9 +59,10 @@ export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
         onSuccess(data)
       }
     },
-    onError: error => {
+    onError: (error, variables) => {
       isSuccess.value = false
-      submitError.value = error?.response?.data?.message || 'Произошла ошибка при отправке формы'
+      submitError.value = error
+      console.log('Form submission error:', error)
 
       if (onError) {
         onError(error)
@@ -85,8 +87,10 @@ export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
       isSubmitting.value = false
       return
     }
+    const extraDataValue = typeof extraData === 'function' ? extraData() : extraData
 
-    await mutation.mutateAsync(formValues)
+    console.log('Submitting form with values:', { ...formValues, ...extraDataValue })
+    await mutation.mutateAsync({ ...formValues, ...extraDataValue })
   })
 
   // Добавляем функцию для принудительной валидации и обновления состояния
@@ -110,5 +114,7 @@ export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
     isValid,
     isDirty: computed(() => meta.dirty),
     validate: validateForm, // Возвращаем нашу обертку над validate
+    mutate: mutation.mutate,
+    mutateAsync: mutation.mutateAsync,
   }
 }

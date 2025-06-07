@@ -80,6 +80,7 @@ import PhoneInput from '@/components/form/PhoneNumberInput.vue'
 import SelectInput from '@/components/form/SelectInput.vue'
 import TextInput from '@/components/form/TextInput.vue'
 import maskaRules from '@/utils/RulesMaskaInput'
+import { useQueryGenerateCaptcha } from '@/services/notification'
 
 // Regions options
 const regionOptions = [
@@ -94,10 +95,6 @@ const regionOptions = [
 ]
 
 // Captcha management
-const captchaUrl = ref('https://picsum.photos/180/50?random=' + Date.now())
-const refreshCaptcha = () => {
-  captchaUrl.value = 'https://picsum.photos/180/50?random=' + Date.now()
-}
 
 // Notifications
 const showSuccessMessage = ref(false)

@@ -1,122 +1,181 @@
 <template>
   <div class="notification-form pa-4">
-    <form @submit.prevent="onSubmit">
-      <!-- СНИЛС -->
-      <TextInput id="snils" name="snils" label="Укажите СНИЛС" required :mask="maskaRules.snils" />
+    <template v-if="!isLoadingGenerateCaptcha">
+      <form @submit.prevent="onSubmit">
+        <!-- СНИЛС -->
+        <TextInput
+          id="snils"
+          name="snils"
+          label="Укажите СНИЛС"
+          required
+          :mask="maskaRules.snils"
+        />
 
-      <!-- Email -->
-      <TextInput
-        id="email"
-        name="email"
-        label="Укажите адрес электронной почты"
-        type="email"
-        required
-      />
+        <!-- Email -->
+        <TextInput
+          id="email"
+          name="email"
+          label="Укажите адрес электронной почты"
+          type="email"
+          required
+        />
 
-      <!-- Телефон -->
-      <PhoneInput
-        id="phone"
-        name="phone"
-        label="Укажите контактный номер телефона"
-        :mask="maskaRules.russianPhone"
-      />
+        <!-- Телефон -->
+        <PhoneInput
+          id="phone"
+          name="phone"
+          label="Укажите контактный номер телефона"
+          :mask="maskaRules.russianPhone"
+        />
 
-      <!-- Капча -->
-      <CaptchaInput
-        id="captcha"
-        name="captcha"
-        label="Укажите код с картинки"
-        :captcha-url="captchaUrl"
-        @refresh-captcha="refreshCaptcha"
-        required
-      />
+        <!-- Капча -->
+        <CaptchaInput
+          id="captchaCode"
+          name="captchaCode"
+          label="Укажите код с картинки"
+          :captcha-url="captchaImageUrl"
+          @refresh-captcha="refetchGenerateCaptcha"
+          required
+          :mask="maskaRules.captchaCode"
+        />
 
-      <!-- Кнопка отправки -->
-      <div class="d-flex">
-        <v-btn
-          type="submit"
-          color="primary"
-          variant="elevated"
-          size="large"
-          :loading="isSubmitting"
-          :disabled="!isValid || isSubmitting"
-        >
-          Отправить
-        </v-btn>
-      </div>
+        <!-- Ошибки полей -->
+        <div v-if="Object.keys(fieldErrors).length > 0" class="error-fields">
+          <v-list density="compact" class="error-list">
+            <v-list-item
+              v-for="(message, field) in fieldErrors"
+              :key="field"
+              class="text-error"
+              prepend-icon="mdi-alert-circle-outline"
+            >
+              {{ message }}
+            </v-list-item>
+          </v-list>
+        </div>
+        <template v-else>
+          <div v-if="hasErrors" class="errors-section">
+            <v-alert type="error" class="ma-2">
+              {{ generalError }}
+            </v-alert>
+          </div>
+        </template>
 
-      <!-- Пояснение -->
-      <div class="mt-4 text-caption text-grey">
-        <span class="text-error">*</span> - отмечены поля обязательные для заполнения
-      </div>
+        <!-- Кнопка отправки -->
+        <div class="d-flex">
+          <v-btn
+            type="submit"
+            color="primary"
+            variant="elevated"
+            size="large"
+            :loading="isSubmitting"
+            :disabled="!isValid || isSubmitting"
+          >
+            Отправить
+          </v-btn>
+        </div>
 
-      <!-- Snackbars -->
-      <v-snackbar v-model="showSuccessMessage" color="success" timeout="3000">
-        Уведомление успешно отправлено
-      </v-snackbar>
+        <!-- Пояснение -->
+        <div class="mt-4 text-caption text-grey">
+          <span class="text-error">*</span> - отмечены поля обязательные для заполнения
+        </div>
 
-      <v-snackbar v-model="showErrorMessage" color="error" timeout="3000">
-        {{ submitError }}
-      </v-snackbar>
-    </form>
+        <!-- Snackbars -->
+        <v-snackbar v-model="showSuccessMessage" color="success" timeout="3000">
+          Уведомление успешно отправлено
+        </v-snackbar>
+      </form>
+    </template>
+    <template v-else="isLoadingGenerateCaptcha">
+      <LoadingSpin />
+    </template>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref, toRaw, watch } from 'vue'
 
 import CaptchaInput from '@/components/form/CaptchaInput.vue'
 import PhoneInput from '@/components/form/PhoneNumberInput.vue'
 import TextInput from '@/components/form/TextInput.vue'
 import maskaRules from '@/utils/RulesMaskaInput'
-
-// Captcha management
-const captchaUrl = ref('https://picsum.photos/180/50?random=' + Date.now())
-const refreshCaptcha = () => {
-  captchaUrl.value = 'https://picsum.photos/180/50?random=' + Date.now()
-}
+import { useQueryGenerateCaptcha } from '@/services/notification'
+import { notificationBySnilsSchema } from '@/schemas/notification'
+import { useFormSubmit } from '@/composables/useFormSubmit'
+import { notificationApi } from '@/apis/notifications'
+import LoadingSpin from '@/components/loading/LoadingSpin.vue'
+import { useApiErrors } from '@/composables/useApiErrors'
 
 // Notifications
 const showSuccessMessage = ref(false)
-const showErrorMessage = ref(false)
+
+// API Errors
+const { fieldErrors, generalError, hasErrors, setFieldErrors, clearFieldErrors } = useApiErrors()
 
 // Form setup
 const initialValuesForm = {
   snils: '',
   email: '',
   phone: '',
+  captchaCode: '',
 }
 
-// const { onSubmit, isSubmitting, isSuccess, submitError, isValid, errors } = useFormSubmit(
-//   initialValuesForm,
-//   notificationBySnilsSchema,
-//   notificationService.submitNotification,
-//   {
-//     onSuccess: () => {
-//       showSuccessMessage.value = true
-//       refreshCaptcha()
-//     },
-//     onError: error => {
-//       showErrorMessage.value = true
+// Get captcha data
+const {
+  dataGenerateCaptcha,
+  refetchGenerateCaptcha,
+  isLoadingGenerateCaptcha,
+  isFetchingGenerateCaptcha,
+} = useQueryGenerateCaptcha()
 
-//       if (error?.response?.data?.field === 'captcha') {
-//         refreshCaptcha()
-//       }
-//     },
-//   }
-// )
+const captchaImageUrl = computed(() => {
+  if (!isFetchingGenerateCaptcha.value) {
+    return dataGenerateCaptcha.value.imgBase64
+  }
+})
 
-// watch(
-//   () => errors.value,
-//   newErrors => console.log('Errors updated:', newErrors)
-// ) // Watch for error messages
+const captchaToken = computed(() => {
+  if (!isFetchingGenerateCaptcha.value) {
+    return dataGenerateCaptcha.value.token
+  }
+})
 
-// watch(
-//   () => submitError.value,
-//   newVal => {
-//     showErrorMessage.value = Boolean(newVal)
-//   }
-// )
+// submit form notification by snils
+const { onSubmit, isSubmitting, isValid, errors } = useFormSubmit(
+  initialValuesForm,
+  notificationBySnilsSchema,
+  notificationApi.notificationRequestBySnils,
+  {
+    extraData: () => ({
+      captchaToken: captchaToken.value,
+    }),
+    onSuccess: () => {
+      showSuccessMessage.value = true
+      refetchGenerateCaptcha()
+      clearFieldErrors()
+    },
+    onError: error => {
+      console.log('Error submitting form:', error)
+      setFieldErrors(error)
+      refetchGenerateCaptcha()
+    },
+  }
+)
+
+watch(
+  () => errors.value,
+  newErrors => console.log('Errors updated:', newErrors)
+) // Watch for error messages
+
+// Clear API errors when form validation errors change
+watch(
+  () => errors.value,
+  () => {
+    if (Object.keys(errors.value || {}).length > 0) {
+      clearFieldErrors() // Clear API errors when form has validation errors
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>
@@ -124,5 +183,14 @@ const initialValuesForm = {
   max-width: 600px;
   margin: 0 auto;
   background-color: var(--color-blue-light);
+}
+.errors-section {
+  border-radius: 4px;
+  border-left: 4px solid #ff5252;
+  background-color: #fff1f1;
+}
+
+.error-list {
+  background-color: transparent;
 }
 </style>

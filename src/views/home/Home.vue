@@ -49,7 +49,7 @@ import {
   SPECIALIST_WORK_TYPE,
   SPECIALLIST_STATUS,
 } from '@/constants/filter.js'
-import { useQueryGetListSpecialists } from '@/services/notification.js'
+import { useQueryGetListSpecialists } from '@/services/specialist.js'
 import { AnonamisTableFilter } from 'anonamis'
 import { size } from 'lodash'
 import { computed, ref, shallowRef, toRaw, watch } from 'vue'

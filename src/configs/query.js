@@ -2,6 +2,8 @@ import { QueryClient } from '@tanstack/vue-query'
 
 export const queryName = {
   listSpecialists: ' listSpecialists',
+  generateCaptcha: 'generateCaptcha',
+  getRegionsList: 'getRegionsList',
 }
 
 export const queryClient = new QueryClient({
