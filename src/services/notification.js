@@ -3,7 +3,7 @@ import { queryName } from '@/configs/query'
 import { useQuery } from '@tanstack/vue-query'
 import { ref } from 'vue'
 
-export const useGetListSpecialists = (queryParamsRef = ref({})) => {
+export const useQueryGetListSpecialists = (queryParamsRef = ref({})) => {
   // Здесь мы используем useQuery с POST-запросом
   const queryResult = useQuery({
     queryKey: [queryName.listSpecialists, queryParamsRef],
@@ -14,7 +14,7 @@ export const useGetListSpecialists = (queryParamsRef = ref({})) => {
   })
 
   return {
-    data: queryResult.data,
+    dataListSpecialists: queryResult.data,
     isPendingGetSpecialists: queryResult.isPending,
     isLoadingSpecialists: queryResult.isLoading, // Только при первой загрузке
     isFetchingSpecialists: queryResult.isFetching, // При любом обновлении данных
