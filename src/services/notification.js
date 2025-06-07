@@ -18,3 +18,20 @@ export const useQueryGenerateCaptcha = () => {
     refetchGenerateCaptcha: queryResult.refetch,
   }
 }
+
+export const useQueryGetListRegions = () => {
+  const queryResult = useQuery({
+    queryKey: [queryName.listRegions],
+    queryFn: () => notificationApi.getRegionsList(),
+  })
+
+  return {
+    dataRegionsList: queryResult.data,
+    isPendingRegionsList: queryResult.isPending,
+    isLoadingRegionsList: queryResult.isLoading,
+    isFetchingRegionsList: queryResult.isFetching,
+    isSuccessRegionsList: queryResult.isSuccess,
+    isErrorRegionsList: queryResult.isError,
+    refetchRegionsList: queryResult.refetch,
+  }
+}

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import { object, string } from 'yup'
 import { emailRule, phonenumberRussianRule } from './common'
 
@@ -12,12 +13,13 @@ export const notificationBySnilsSchema = object({
     .min(6, 'Код должен содержать 6 символов'),
 })
 
-export const notificationByNameSchema = object({
+export const notificationByFioSchema = object({
   region: string().required('Регион обязателен для заполнения'),
-  fullName: string()
+  fio: string()
     .required('ФИО обязательно для заполнения')
-    .min(5, 'ФИО должно содержать минимум 5 символов'),
-  birthDate: string()
+    .min(5, 'ФИО должно содержать минимум 5 символов')
+    .matches(/^[а-яА-ЯёЁ\s\-]+$/, 'ФИО может содержать только русские буквы, тире и знак пробела'),
+  birthdate: string()
     .required('Дата рождения обязательна для заполнения')
     .matches(/^\d{4}-\d{2}-\d{2}$/, 'Неверный формат даты'),
   email: emailRule,

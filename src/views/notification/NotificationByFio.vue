@@ -1,15 +1,22 @@
 <template>
-  <div class="notification-form pa-4">
-    <template v-if="!isLoadingGenerateCaptcha">
+  <template v-if="!isLoadingGenerateCaptcha && !isLoadingRegionsList">
+    <div class="notification-form pa-4">
       <form @submit.prevent="onSubmit">
-        <!-- СНИЛС -->
-        <TextInput
-          id="snils"
-          name="snils"
-          label="Укажите СНИЛС"
+        <!-- Region -->
+        <SelectInput
+          id="region"
+          name="region"
+          label="Регион проживания (по месту регистрации)"
+          :options="regionOptions"
+          placeholder="Поиск региона..."
           required
-          :mask="maskaRules.snils"
         />
+
+        <!-- Full Name -->
+        <TextInput id="fio" name="fio" label="Фамилия, Имя, Отчество" required />
+
+        <!-- Date of Birth -->
+        <DatePicker id="birthdate" name="birthdate" label="Дата рождения" required />
 
         <!-- Email -->
         <TextInput
@@ -20,7 +27,7 @@
           required
         />
 
-        <!-- Телефон -->
+        <!-- Phone -->
         <PhoneInput
           id="phone"
           name="phone"
@@ -60,7 +67,7 @@
           </div>
         </template>
 
-        <!-- Кнопка отправки -->
+        <!-- Submit Button -->
         <div class="d-flex">
           <v-btn
             type="submit"
@@ -73,46 +80,49 @@
           </v-btn>
         </div>
 
-        <!-- Пояснение -->
+        <!-- Required Fields Note -->
         <div class="mt-4 text-caption text-grey">
           <span class="text-error">*</span> - отмечены поля обязательные для заполнения
         </div>
 
-        <!-- Snackbars -->
         <v-snackbar v-model="showSuccessMessage" color="success" timeout="3000">
           Уведомление успешно отправлено
         </v-snackbar>
       </form>
-    </template>
-    <template v-else>
-      <LoadingSpin />
-    </template>
-  </div>
-</template>
+    </div>
+  </template>
 
+  <template v-else>
+    <LoadingSpin />
+  </template>
+</template>
 <script setup>
 import { computed, ref, toRaw, watch } from 'vue'
 
-import CaptchaInput from '@/components/form/CaptchaInput.vue'
 import PhoneInput from '@/components/form/PhoneNumberInput.vue'
+import SelectInput from '@/components/form/SelectInput.vue'
 import TextInput from '@/components/form/TextInput.vue'
 import maskaRules from '@/utils/RulesMaskaInput'
-import { useQueryGenerateCaptcha } from '@/services/notification'
-import { notificationBySnilsSchema } from '@/schemas/notification'
+import { useQueryGenerateCaptcha, useQueryGetListRegions } from '@/services/notification'
+import { notificationByFioSchema } from '@/schemas/notification'
 import { useFormSubmit } from '@/composables/useFormSubmit'
 import { notificationApi } from '@/apis/notifications'
-import LoadingSpin from '@/components/loading/LoadingSpin.vue'
+import CaptchaInput from '@/components/form/CaptchaInput.vue'
 import { useApiErrors } from '@/composables/useApiErrors'
+import DatePicker from '@/components/date/DatePicker.vue'
 
 // Notifications
 const showSuccessMessage = ref(false)
 
-// API Errors
 const { fieldErrors, generalError, hasErrors, setFieldErrors, clearFieldErrors } = useApiErrors()
+
+console.log('fieldErrors', fieldErrors.value)
 
 // Form setup
 const initialValuesForm = {
-  snils: '',
+  region: '',
+  fio: '',
+  birthdate: '',
   email: '',
   phone: '',
   captchaCode: '',
@@ -138,11 +148,41 @@ const captchaToken = computed(() => {
   }
 })
 
-// submit form notification by snils
+// Data region
+const { dataRegionsList, isLoadingRegionsList } = useQueryGetListRegions()
+
+const regionOptions = computed(() => {
+  if (!dataRegionsList.value || !dataRegionsList.value.regions) {
+    return []
+  }
+
+  const regions = dataRegionsList.value.regions
+  const result = []
+
+  Object.entries(regions).forEach(([federalDistrict, districtRegions]) => {
+    result.push({
+      header: federalDistrict,
+      divider: true,
+      disabled: true,
+    })
+
+    Object.entries(districtRegions).forEach(([regionName, regionCode]) => {
+      result.push({
+        value: regionCode,
+        label: regionName,
+      })
+    })
+  })
+
+  return result
+})
+
+console.log('regionOptions', toRaw(regionOptions.value))
+
 const { onSubmit, isSubmitting, isValid, errors } = useFormSubmit(
   initialValuesForm,
-  notificationBySnilsSchema,
-  notificationApi.notificationRequestBySnils,
+  notificationByFioSchema,
+  notificationApi.notificationRequestByFio,
   {
     extraData: () => ({
       captchaToken: captchaToken.value,
@@ -153,7 +193,6 @@ const { onSubmit, isSubmitting, isValid, errors } = useFormSubmit(
       clearFieldErrors()
     },
     onError: error => {
-      console.log('Error submitting form:', error)
       setFieldErrors(error)
       refetchGenerateCaptcha()
     },
@@ -164,7 +203,8 @@ const { onSubmit, isSubmitting, isValid, errors } = useFormSubmit(
 watch(
   () => errors.value,
   () => {
-    console.log('Form validation errors changed:', toRaw(errors.value))
+    console.log('watch errors', errors.value)
+    console.log('watch fieldErrors', isValid.value)
     if (Object.keys(errors.value || {}).length > 0) {
       clearFieldErrors() // Clear API errors when form has validation errors
     }

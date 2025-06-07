@@ -1,3 +1,4 @@
+import { isObject } from 'lodash'
 import { ref, computed } from 'vue'
 
 export function useApiErrors() {
@@ -25,7 +26,9 @@ export function useApiErrors() {
       // Xử lý các lỗi validation field
       Object.entries(validationErrors).forEach(([field, errors]) => {
         if (Array.isArray(errors) && errors.length > 0) {
-          fieldErrors.value[field] = errors[0].message
+          fieldErrors.value[errors[0].label] = errors[0].message
+        } else if (isObject(errors) && errors.label && errors.message) {
+          fieldErrors.value[errors.label] = errors.message
         } else if (typeof errors === 'string') {
           fieldErrors.value[field] = errors
         }

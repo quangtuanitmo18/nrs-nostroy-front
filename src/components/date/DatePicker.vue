@@ -1,5 +1,5 @@
 <template>
-  <div class="form-field">
+  <div class="mb-4">
     <label v-if="label" :for="id" class="mb-1 d-block">
       {{ label }}
       <span v-if="required" class="text-error">*</span>
@@ -208,6 +208,7 @@ watch(
 <style scoped>
 .form-field {
   width: 100%;
+  margin-bottom: 16px;
 }
 
 .date-input {
