@@ -1,5 +1,5 @@
 import { isObject } from 'lodash'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 
 export function useApiErrors() {
   const fieldErrors = ref({})
@@ -13,17 +13,16 @@ export function useApiErrors() {
     fieldErrors.value = {}
     generalError.value = ''
 
-    // Nếu không có response, không làm gì cả
     if (!errorResponse) return
 
-    // Lấy data từ error response
+    // get data from error response
     const responseData = errorResponse
 
-    // Trường hợp 1: Lỗi validation với validationErrors
+    // 1:  validationErrors
     if (responseData.data?.validationErrors) {
       const validationErrors = responseData.data.validationErrors
 
-      // Xử lý các lỗi validation field
+      // Handle field validation errors
       Object.entries(validationErrors).forEach(([field, errors]) => {
         if (Array.isArray(errors) && errors.length > 0) {
           fieldErrors.value[errors[0].label] = errors[0].message
@@ -34,16 +33,16 @@ export function useApiErrors() {
         }
       })
 
-      // Nếu có message chung, lưu lại
+      // Handle general validation error
       if (responseData.message) {
         generalError.value = responseData.message
       }
     }
-    // Trường hợp 2: Lỗi exception hoặc lỗi general
+    // 2:  exception or general error
     else if (responseData.message) {
       generalError.value = responseData.message
     }
-    // Trường hợp khác: Lỗi không xác định
+    //: error unknown
     else {
       generalError.value = 'Произошла ошибка при отправке формы'
     }

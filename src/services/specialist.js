@@ -9,7 +9,7 @@ export const useQueryGetListSpecialists = (queryParamsRef = ref({})) => {
     queryKey: [queryName.listSpecialists, queryParamsRef],
     queryFn: () => specialistApi.getSpecialists(queryParamsRef.value),
     keepPreviousData: true, // Сохраняем предыдущие данные во время загрузки
-    staleTime: 10000, // Данные считаются актуальными 10 секунд
+    staleTime: 10 * 1000 * 60, // Данные считаются актуальными 10 минут
   })
 
   return {

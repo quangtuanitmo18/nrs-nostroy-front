@@ -58,12 +58,8 @@ const props = defineProps({
   },
 })
 
-// Sử dụng useField để tự động kết nối với form
 const { value, errorMessage, meta } = useField(() => props.name)
 
-// Hiển thị error khi:
-// 1. Field đã được touched (blur ít nhất 1 lần) VÀ có error
-// 2. HOẶC field có value và invalid (real-time validation khi typing)
 const shouldShowError = computed(() => {
   return errorMessage.value && (meta.touched || (value.value && !meta.valid))
 })

@@ -67,7 +67,15 @@
 
         <!-- Snackbars -->
         <v-snackbar v-model="showSuccessMessage" color="success" timeout="3000">
-          Уведомление успешно отправлено
+          {{ successMessageText || 'Уведомление успешно отправлено' }}
+          <template v-slot:actions>
+            <v-btn
+              color="white"
+              icon="mdi-close"
+              variant="text"
+              @click="showSuccessMessage = false"
+            />
+          </template>
         </v-snackbar>
       </form>
     </template>
@@ -78,22 +86,24 @@
 </template>
 
 <script setup>
-import { computed, ref, toRaw, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
+import { notificationApi } from '@/apis/notifications'
 import CaptchaInput from '@/components/form/CaptchaInput.vue'
+import FieldErrors from '@/components/form/FieldErrors.vue'
 import PhoneInput from '@/components/form/PhoneNumberInput.vue'
 import TextInput from '@/components/form/TextInput.vue'
-import maskaRules from '@/utils/RulesMaskaInput'
-import { useQueryGenerateCaptcha } from '@/services/notification'
-import { notificationBySnilsSchema } from '@/schemas/notification'
-import { useFormSubmit } from '@/composables/useFormSubmit'
-import { notificationApi } from '@/apis/notifications'
 import LoadingSpin from '@/components/loading/LoadingSpin.vue'
 import { useApiErrors } from '@/composables/useApiErrors'
-import FieldErrors from '@/components/form/FieldErrors.vue'
+import { useFormSubmit } from '@/composables/useFormSubmit'
+import { notificationBySnilsSchema } from '@/schemas/notification'
+import { useQueryGenerateCaptcha } from '@/services/notification'
+import { cleanFormData } from '@/utils/formData'
+import maskaRules from '@/utils/RulesMaskaInput'
 
 // Notifications
 const showSuccessMessage = ref(false)
+const successMessageText = ref('')
 
 // API Errors
 const { fieldErrors, generalError, hasErrors, setFieldErrors, clearFieldErrors } = useApiErrors()
@@ -130,18 +140,18 @@ const captchaToken = computed(() => {
 const { onSubmit, isSubmitting, isValid, errors } = useFormSubmit(
   initialValuesForm,
   notificationBySnilsSchema,
-  notificationApi.notificationRequestBySnils,
+  data => notificationApi.notificationRequestBySnils(cleanFormData(data)),
   {
     extraData: () => ({
       captchaToken: captchaToken.value,
     }),
-    onSuccess: () => {
+    onSuccess: data => {
       showSuccessMessage.value = true
+      successMessageText.value = data?.data?.message
       refetchGenerateCaptcha()
       clearFieldErrors()
     },
     onError: error => {
-      console.log('Error submitting form:', error)
       setFieldErrors(error)
       refetchGenerateCaptcha()
     },
@@ -152,7 +162,6 @@ const { onSubmit, isSubmitting, isValid, errors } = useFormSubmit(
 watch(
   () => errors.value,
   () => {
-    console.log('Form validation errors changed:', toRaw(errors.value))
     if (Object.keys(errors.value || {}).length > 0) {
       clearFieldErrors() // Clear API errors when form has validation errors
     }
