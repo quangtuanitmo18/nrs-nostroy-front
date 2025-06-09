@@ -40,7 +40,7 @@ http.interceptors.response.use(
     }
 
     // Return error for component to handle
-    return Promise.reject(response?.data?.message || 'An error occurred when connecting to server')
+    return Promise.reject(response?.data || 'An error occurred when connecting to server')
   }
 )
 

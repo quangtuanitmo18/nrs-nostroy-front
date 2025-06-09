@@ -1,12 +1,12 @@
 <template>
-  <div class="form-field">
+  <div class="mb-4">
     <label v-if="label" :for="id" class="mb-1 d-block">
       {{ label }}
       <span v-if="required" class="text-error">*</span>
     </label>
     <div class="captcha-container d-flex align-center mb-2">
       <div class="captcha-image me-4">
-        <img :src="captchaUrl" alt="Captcha" width="180" height="50" />
+        <v-img :src="captchaUrl" alt="Captcha" width="180" height="50" />
       </div>
       <v-btn icon size="small" variant="text" @click="refreshCaptcha" :disabled="isLoadingCaptcha">
         <v-icon>mdi-refresh</v-icon>
@@ -21,6 +21,7 @@
       variant="outlined"
       density="comfortable"
       bg-color="white"
+      v-maska="mask"
     ></v-text-field>
   </div>
 </template>
@@ -58,7 +59,13 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  mask: {
+    type: Object,
+    default: null,
+  },
 })
+
+console.log('CaptchaInput props:', props.captchaUrl)
 
 const { value, errorMessage, meta } = useField(() => props.name)
 
@@ -79,10 +86,6 @@ const refreshCaptcha = () => {
 </script>
 
 <style scoped>
-.form-field {
-  margin-bottom: 1.5rem;
-}
-
 .text-error {
   color: #ff5252;
 }

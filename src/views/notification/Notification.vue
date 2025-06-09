@@ -14,10 +14,10 @@
         </v-btn>
         <v-btn
           color="primary"
-          :variant="activeTab === 'name' ? 'flat' : 'tonal'"
+          :variant="activeTab === 'fio' ? 'flat' : 'tonal'"
           class="rounded-0"
-          :class="{ 'active-tab': activeTab === 'name' }"
-          @click="switchTab('name')"
+          :class="{ 'active-tab': activeTab === 'fio' }"
+          @click="switchTab('fio')"
         >
           по ФИО
         </v-btn>
@@ -27,15 +27,15 @@
     <!-- Form Container -->
     <div>
       <NotificationBySnils v-if="activeTab === 'snils'" />
-      <NotificationByName v-else-if="activeTab === 'name'" />
+      <NotificationByFio v-else-if="activeTab === 'fio'" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import NotificationByName from './NotificationByName.vue'
 import NotificationBySnils from './NotificationBySnils.vue'
+import NotificationByFio from './NotificationByFio.vue'
 
 const activeTab = ref('snils') // Default active tab
 

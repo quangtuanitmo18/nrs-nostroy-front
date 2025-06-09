@@ -10,12 +10,12 @@
       </div>
     </v-col>
   </v-row>
-  <div class="my-6 position-relative">
+  <div class="my-6 position-relative table-container">
     <!-- Показываем таблицу всегда кроме первой загрузки -->
     <template v-if="!isLoadingSpecialists || list.length > 0">
       <!-- Оверлей индикатора загрузки при фильтрации -->
       <div v-if="isFetchingSpecialists && !isLoadingSpecialists" class="filter-loading-overlay">
-        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+        <LoadingSpin></LoadingSpin>
       </div>
 
       <AnonamisTableFilter
@@ -49,8 +49,9 @@ import {
   SPECIALIST_WORK_TYPE,
   SPECIALLIST_STATUS,
 } from '@/constants/filter.js'
-import { useGetListSpecialists } from '@/services/notification.js'
+import { useQueryGetListSpecialists } from '@/services/specialist.js'
 import { AnonamisTableFilter } from 'anonamis'
+import { size } from 'lodash'
 import { computed, ref, shallowRef, toRaw, watch } from 'vue'
 
 const list = ref([])
@@ -69,15 +70,16 @@ const queryParams = ref({
 })
 
 // query specialists
-// Используем useQuery вместо useMutation
-const { data, isPendingGetSpecialists, isLoadingSpecialists, isFetchingSpecialists } =
-  useGetListSpecialists(queryParams)
+const {
+  dataListSpecialists,
+  isPendingGetSpecialists,
+  isLoadingSpecialists,
+  isFetchingSpecialists,
+} = useQueryGetListSpecialists(queryParams)
 
 const searchHint = 'Поиск по ФИО и Идентификационному номеру'
 
 const pagination = shallowRef({})
-
-console.log(toRaw(filters.value))
 
 const countFilters = computed(() => Object.keys(filters.value).length)
 
@@ -221,10 +223,10 @@ const setFilter = dataFilters => {
   }, {})
 }
 
-watch([page, sort, filters, search], () => {
+watch([page, sort, filters, search, size], () => {
   queryParams.value = {
     page: page.value,
-    row_page: pagination.value.size || 10,
+    row_page: size.value || 10,
     filters: filters.value,
     sort_by: sort.value.reduce((acc, i) => ({ ...acc, [i.sortBy]: i.sortType }), {}),
     search_string: search.value,
@@ -233,15 +235,15 @@ watch([page, sort, filters, search], () => {
 
 // Обновляем список и пагинацию при получении новых данных
 watch(
-  data,
-  newData => {
-    if (newData && newData.data) {
-      list.value = newData.data.items || []
+  dataListSpecialists,
+  newDataListSpecialists => {
+    if (newDataListSpecialists && newDataListSpecialists.data) {
+      list.value = newDataListSpecialists.data.items || []
       pagination.value = {
-        count: newData.data_header?.count || 0,
-        pages: newData.data_header?.count_pages || 1,
-        page: newData.data_header?.page || 1,
-        size: newData.data_header?.row_page || 10,
+        count: newDataListSpecialists.data.data_header?.count || 0,
+        pages: newDataListSpecialists.data.data_header?.count_pages || 1,
+        page: newDataListSpecialists.data.data_header?.page || 1,
+        size: newDataListSpecialists.data.data_header?.row_page || 10,
       }
     }
   },

@@ -1,25 +1,37 @@
-import { specialistApi } from '@/apis/specialists'
+import { notificationApi } from '@/apis/notifications'
 import { queryName } from '@/configs/query'
 import { useQuery } from '@tanstack/vue-query'
-import { ref } from 'vue'
 
-export const useGetListSpecialists = (queryParamsRef = ref({})) => {
-  // Здесь мы используем useQuery с POST-запросом
+export const useQueryGenerateCaptcha = () => {
   const queryResult = useQuery({
-    queryKey: [queryName.listSpecialists, queryParamsRef],
-    queryFn: () => specialistApi.getSpecialists(queryParamsRef.value),
-    keepPreviousData: true, // Сохраняем предыдущие данные во время загрузки
-    staleTime: 10000, // Данные считаются актуальными 10 секунд
-    refetchOnWindowFocus: false,
+    queryKey: [queryName.generateCaptcha],
+    queryFn: () => notificationApi.generateCaptcha(),
   })
 
   return {
-    data: queryResult.data,
-    isPendingGetSpecialists: queryResult.isPending,
-    isLoadingSpecialists: queryResult.isLoading, // Только при первой загрузке
-    isFetchingSpecialists: queryResult.isFetching, // При любом обновлении данных
-    isSuccessGetSpecialists: queryResult.isSuccess,
-    isErrorGetSpecialists: queryResult.isError,
-    refetchSpecialists: queryResult.refetch,
+    dataGenerateCaptcha: queryResult.data,
+    isPendingGenerateCaptcha: queryResult.isPending,
+    isLoadingGenerateCaptcha: queryResult.isLoading,
+    isFetchingGenerateCaptcha: queryResult.isFetching,
+    isSuccessGenerateCaptcha: queryResult.isSuccess,
+    isErrorGenerateCaptcha: queryResult.isError,
+    refetchGenerateCaptcha: queryResult.refetch,
+  }
+}
+
+export const useQueryGetListRegions = () => {
+  const queryResult = useQuery({
+    queryKey: [queryName.listRegions],
+    queryFn: () => notificationApi.getRegionsList(),
+  })
+
+  return {
+    dataRegionsList: queryResult.data,
+    isPendingRegionsList: queryResult.isPending,
+    isLoadingRegionsList: queryResult.isLoading,
+    isFetchingRegionsList: queryResult.isFetching,
+    isSuccessRegionsList: queryResult.isSuccess,
+    isErrorRegionsList: queryResult.isError,
+    refetchRegionsList: queryResult.refetch,
   }
 }
