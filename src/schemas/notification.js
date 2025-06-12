@@ -10,7 +10,7 @@ export const notificationBySnilsSchema = object({
   phone: phonenumberRussianRule,
   captchaCode: string()
     .required('Код с картинки обязателен для заполнения')
-    .min(6, 'Код должен содержать 6 символов'),
+    .min(4, 'Код должен содержать минимум 4 символа'),
 })
 
 export const notificationByFioSchema = object({
@@ -26,5 +26,5 @@ export const notificationByFioSchema = object({
   phone: phonenumberRussianRule,
   captchaCode: string()
     .required('Код с картинки обязателен для заполнения')
-    .min(6, 'Код должен содержать 6 символов'),
+    .min(4, 'Код должен содержать минимум 4 символа'),
 })

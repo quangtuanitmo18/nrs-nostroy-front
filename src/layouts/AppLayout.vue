@@ -1,5 +1,5 @@
 <template>
-  <div class="container container--fluid">
+  <div class="container">
     <v-app class="content">
       <AppHeader />
       <v-main class="main">

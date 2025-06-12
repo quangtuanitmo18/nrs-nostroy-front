@@ -73,7 +73,15 @@
         </div>
 
         <v-snackbar v-model="showSuccessMessage" color="success" timeout="3000">
-          Уведомление успешно отправлено
+          {{ successMessageText || 'Уведомление успешно отправлено' }}
+          <template v-slot:actions>
+            <v-btn
+              color="white"
+              icon="mdi-close"
+              variant="text"
+              @click="showSuccessMessage = false"
+            />
+          </template>
         </v-snackbar>
       </form>
     </div>
@@ -84,26 +92,28 @@
   </template>
 </template>
 <script setup>
-import { computed, ref, toRaw, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
+import { notificationApi } from '@/apis/notifications'
+import DatePicker from '@/components/date/DatePicker.vue'
+import CaptchaInput from '@/components/form/CaptchaInput.vue'
+import FieldErrors from '@/components/form/FieldErrors.vue'
 import PhoneInput from '@/components/form/PhoneNumberInput.vue'
 import SelectInput from '@/components/form/SelectInput.vue'
 import TextInput from '@/components/form/TextInput.vue'
-import maskaRules from '@/utils/RulesMaskaInput'
-import { useQueryGenerateCaptcha, useQueryGetListRegions } from '@/services/notification'
-import { notificationByFioSchema } from '@/schemas/notification'
-import { useFormSubmit } from '@/composables/useFormSubmit'
-import { notificationApi } from '@/apis/notifications'
-import CaptchaInput from '@/components/form/CaptchaInput.vue'
+import LoadingSpin from '@/components/loading/LoadingSpin.vue'
 import { useApiErrors } from '@/composables/useApiErrors'
-import DatePicker from '@/components/date/DatePicker.vue'
+import { useFormSubmit } from '@/composables/useFormSubmit'
+import { notificationByFioSchema } from '@/schemas/notification'
+import { useQueryGenerateCaptcha, useQueryGetListRegions } from '@/services/notification'
+import { cleanFormData } from '@/utils/formData'
+import maskaRules from '@/utils/RulesMaskaInput'
 
 // Notifications
 const showSuccessMessage = ref(false)
+const successMessageText = ref('')
 
 const { fieldErrors, generalError, hasErrors, setFieldErrors, clearFieldErrors } = useApiErrors()
-
-console.log('fieldErrors', fieldErrors.value)
 
 // Form setup
 const initialValuesForm = {
@@ -167,13 +177,14 @@ const regionOptions = computed(() => {
 const { onSubmit, isSubmitting, isValid, errors } = useFormSubmit(
   initialValuesForm,
   notificationByFioSchema,
-  notificationApi.notificationRequestByFio,
+  data => notificationApi.notificationRequestByFio(cleanFormData(data)),
   {
     extraData: () => ({
       captchaToken: captchaToken.value,
     }),
-    onSuccess: () => {
+    onSuccess: data => {
       showSuccessMessage.value = true
+      successMessageText.value = data?.data?.message
       refetchGenerateCaptcha()
       clearFieldErrors()
     },
@@ -188,8 +199,6 @@ const { onSubmit, isSubmitting, isValid, errors } = useFormSubmit(
 watch(
   () => errors.value,
   () => {
-    console.log('watch errors', errors.value)
-    console.log('watch fieldErrors', isValid.value)
     if (Object.keys(errors.value || {}).length > 0) {
       clearFieldErrors() // Clear API errors when form has validation errors
     }

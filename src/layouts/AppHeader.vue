@@ -3,18 +3,24 @@
     <div class="header">
       <v-row no-gutters align="center" justify="space-between">
         <!-- Logo and Title Section -->
-        <v-col cols="12" lg="6" class="d-flex align-center flex-column flex-sm-row">
+        <v-col cols="12" md="2" class="d-flex align-center flex-column flex-sm-row">
           <div @click="handleNavigateToHome" class="cursor-pointer">
             <v-img :src="logo_head" :width="170" aspect-ratio="16/9" cover></v-img>
           </div>
-          <div class="d-flex flex-column ml-0 ml-sm-4 mt-3 mt-sm-0">
-            <h1 class="header__title--primary">Национальный реестр специалистов</h1>
-            <span class="header__title--secondary">в области строительства</span>
+        </v-col>
+        <v-col cols="12" md="10" lg="7">
+          <div class="d-flex flex-column justify-center align-center">
+            <h1 class="header__title--primary">
+              Саморегулируемые организации в области строительства, реконструкции,
+            </h1>
+            <span class="header__title--secondary"
+              >капитального ремонта, сноса объектов капитального строительства</span
+            >
           </div>
         </v-col>
 
         <!-- Button Section -->
-        <v-col cols="12" lg="6" class="d-flex justify-center justify-sm-end mt-4 mt-sm-0">
+        <v-col cols="12" md="12" lg="3" class="d-flex justify-center justify-sm-end mt-4 mt-sm-0">
           <v-btn
             v-if="$route.name == path.home.name"
             class="header__btn"
@@ -72,22 +78,19 @@ const handleNavigateToHome = () => {
 
 .header__title {
   &--primary {
-    font-size: 24px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 400;
     margin-bottom: 8px;
 
-    @media (min-width: 600px) {
-      font-size: 36px;
-      margin-bottom: 12px;
+    @media (min-width: 992px) {
+      font-size: 20px;
     }
   }
 
   &--secondary {
     font-size: 16px;
-    margin-right: 50px;
-    text-align: end;
-    margin-left: 50px;
-    @media (min-width: 600px) {
+
+    @media (min-width: 992px) {
       font-size: 20px;
     }
   }

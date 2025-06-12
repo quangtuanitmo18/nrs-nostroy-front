@@ -27,7 +27,6 @@ export default defineConfig({
       '/api': {
         target: 'https://nrs-nostroy-open.anonamis.ru',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, ''),
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err)

@@ -1,69 +1,80 @@
 <template>
-  <v-row no-gutters>
-    <v-col cols="12" sm="6" class="ml-auto">
-      <div class="text-caption text-left text-grey-darken-1">
-        * - Считать решения о включении сведений о физических лицах, включенных в Национальный
-        реестр специалистов в области строительства до вступления в силу Федерального закона от
-        03.07.2016 года 372-ФЗ «О внесении изменений в Градостроительный кодекс Российской Федерации
-        и отдельные законодательные акты Российской Федерации», вступившими в силу с 01 июля 2017
-        года (Решение Комиссии по ведению НРС от 03.07.2017 г., №024)
-      </div>
-    </v-col>
-  </v-row>
-  <div class="my-6 position-relative table-container">
-    <!-- Показываем таблицу всегда кроме первой загрузки -->
-    <template v-if="!isLoadingSpecialists || list.length > 0">
-      <!-- Оверлей индикатора загрузки при фильтрации -->
-      <div v-if="isFetchingSpecialists && !isLoadingSpecialists" class="filter-loading-overlay">
-        <LoadingSpin></LoadingSpin>
+  <div class="position-relative header-container">
+    <v-row>
+      <v-col cols="12" sm="6" class="ml-auto">
+        <div class="header-text-caption d-none d-md-block">
+          * - Считать решения о включении сведений о физических лицах, включенных в Национальный
+          реестр специалистов в области строительства до вступления в силу Федерального закона от
+          03.07.2016 года 372-ФЗ «О внесении изменений в Градостроительный кодекс Российской
+          Федерации и отдельные законодательные акты Российской Федерации», вступившими в силу с 01
+          июля 2017 года (Решение Комиссии по ведению НРС от 03.07.2017 г., №024)
+        </div>
+      </v-col>
+    </v-row>
+    <div v-if="isLoadingSpecialists && !list.length" class="mt-8">
+      <LoadingSpin />
+    </div>
+
+    <template v-if="!isLoadingSpecialists || list.length">
+      <div class="my-6 position-relative table-container">
+        <!-- Table view (hidden on md and down) -->
+        <div class="d-none d-lg-block">
+          <HomeViewDesktop
+            :list="list"
+            :pagination="pagination"
+            :sort="sort"
+            :search="search"
+            :searchHint="searchHint"
+            :countFilters="countFilters"
+            :setPage="setPage"
+            :setSort="setSort"
+            :setFilter="setFilter"
+            :setSearch="setSearch"
+            @clear-all-settings="handleClearAllSettings"
+          ></HomeViewDesktop>
+        </div>
       </div>
 
-      <AnonamisTableFilter
-        :columns="columns"
-        :items="list"
-        :pagination="pagination"
-        :sort="sort"
-        :search="search"
-        :searchHint="searchHint"
-        :countFilters="countFilters"
-        :setPage="setPage"
-        :setSort="setSort"
-        :setFilter="setFilter"
-        :setSearch="setSearch"
-        @clear-all-settings="handleClearAllSettings"
-      ></AnonamisTableFilter>
+      <!-- Mobile view -->
+      <div class="d-lg-none my-6 position-relative">
+        <!-- Card view (shown only on md and down) -->
+        <HomeViewMobile
+          :list="list"
+          :pagination="pagination"
+          :sort="sort"
+          :search="search"
+          :searchHint="searchHint"
+          :countFilters="countFilters"
+          :setPage="setPage"
+          :setSort="setSort"
+          :setFilter="setFilter"
+          :setSearch="setSearch"
+          @clear-all-settings="handleClearAllSettings"
+        ></HomeViewMobile>
+      </div>
     </template>
-
-    <!-- Спиннер только при первой загрузке -->
-    <LoadingSpin v-else></LoadingSpin>
   </div>
 </template>
 
 <script setup>
-import LoadingSpin from '@/components/loading/LoadingSpin.vue'
-import {
-  FILTER_TYPE_DATE_TIME,
-  FILTER_TYPE_EQ,
-  FILTER_TYPE_EQ_CHECK,
-  FILTER_TYPE_LIKE,
-  SPECIALIST_WORK_TYPE,
-  SPECIALLIST_STATUS,
-} from '@/constants/filter.js'
+import appConfig from '@/configs/app'
 import { useQueryGetListSpecialists } from '@/services/specialist.js'
-import { AnonamisTableFilter } from 'anonamis'
-import { size } from 'lodash'
 import { computed, ref, shallowRef, toRaw, watch } from 'vue'
+import HomeViewDesktop from './components/HomeViewDesktop.vue'
+import HomeViewMobile from './components/HomeViewMobile.vue'
+import LoadingSpin from '@/components/loading/LoadingSpin.vue'
 
 const list = ref([])
 const page = ref(1)
 const search = ref('')
 const filters = shallowRef({})
 const sort = shallowRef([])
+const size = ref(appConfig.rowPageTable) // Количество элементов на странице
 
 // Объект для параметров запроса
 const queryParams = ref({
   page: 1,
-  row_page: 10,
+  row_page: size.value,
   filters: {},
   sort_by: {},
   search_string: '',
@@ -77,112 +88,13 @@ const {
   isFetchingSpecialists,
 } = useQueryGetListSpecialists(queryParams)
 
+console.log('isloadingSpecialists', isLoadingSpecialists.value)
+
 const searchHint = 'Поиск по ФИО и Идентификационному номеру'
 
 const pagination = shallowRef({})
 
 const countFilters = computed(() => Object.keys(filters.value).length)
-
-const columns = [
-  {
-    heading: 'Идентификационный номер',
-    value: 'registrationNumber',
-    sortOptions: {
-      sortable: true,
-      sortByValue: 'registrationNumber',
-    },
-    filterOptions: {
-      filterByValue: 'registrationNumber',
-      filterType: FILTER_TYPE_LIKE,
-    },
-  },
-  {
-    heading: 'ФИО',
-    value: 'fio',
-    sortOptions: {
-      sortable: true,
-      sortByValue: 'fio',
-    },
-    filterOptions: {
-      filterByValue: 'fio',
-      filterType: FILTER_TYPE_LIKE,
-    },
-  },
-  {
-    heading: 'Дата принятия решения о включении сведений в реестр',
-    value: 'inclusionProtocolDate',
-    sortOptions: {
-      sortable: true,
-      sortByValue: 'inclusionProtocolDate',
-    },
-    filterOptions: {
-      filterByValue: 'inclusionProtocolDate',
-      filterType: FILTER_TYPE_DATE_TIME,
-    },
-  },
-  {
-    heading: 'Дата внесения изменений',
-    value: 'updated',
-    sortOptions: {
-      sortable: true,
-      sortByValue: 'updated',
-    },
-    filterOptions: {
-      filterByValue: 'updated',
-      filterType: FILTER_TYPE_DATE_TIME,
-    },
-  },
-  {
-    heading: 'Дата выдачи свидетельства о независимой оценке квалификации',
-    value: 'inclusionCertificateDate',
-    sortOptions: {
-      sortable: true,
-      sortByValue: 'inclusionCertificateDate',
-    },
-    filterOptions: {
-      filterByValue: 'inclusionCertificateDate',
-      filterType: FILTER_TYPE_DATE_TIME,
-    },
-  },
-  {
-    heading: 'Дата принятия решения об исключении сведений из реестра',
-    value: 'suspensionProtocolDate',
-    sortOptions: {
-      sortable: true,
-      sortByValue: 'suspensionProtocolDate',
-    },
-    filterOptions: {
-      filterByValue: 'suspensionProtocolDate',
-      filterType: FILTER_TYPE_DATE_TIME,
-    },
-  },
-  {
-    heading: 'Вид осуществляемых физическим лицом работ',
-    value: 'workType',
-    sortOptions: {
-      sortable: true,
-      sortByValue: 'workType',
-    },
-    filterOptions: {
-      filterByValue: 'workType',
-      filterType: FILTER_TYPE_EQ,
-      filterValues: SPECIALIST_WORK_TYPE,
-    },
-  },
-  {
-    heading: 'Статус',
-    value: 'statusTitle',
-    sortOptions: {
-      sortable: true,
-      sortByValue: 'statusTitle',
-    },
-    filterOptions: {
-      filterByValue: 'statusTitle',
-      filterType: FILTER_TYPE_EQ_CHECK,
-      filterValues: SPECIALLIST_STATUS,
-    },
-  },
-]
 
 const setPage = value => {
   page.value = value
@@ -195,7 +107,6 @@ const setSort = value => {
 const setSearch = value => {
   search.value = value
 }
-
 const handleClearAllSettings = () => {
   page.value = 1
   filters.value = {}
@@ -237,7 +148,9 @@ watch([page, sort, filters, search, size], () => {
 watch(
   dataListSpecialists,
   newDataListSpecialists => {
+    console.log('query params', toRaw(queryParams.value))
     if (newDataListSpecialists && newDataListSpecialists.data) {
+      console.log('newDataListSpecialists', toRaw(newDataListSpecialists))
       list.value = newDataListSpecialists.data.items || []
       pagination.value = {
         count: newDataListSpecialists.data.data_header?.count || 0,
@@ -250,3 +163,29 @@ watch(
   { immediate: true }
 )
 </script>
+
+<style scoped>
+.specialist-card {
+  transition: all 0.3s ease;
+}
+.header-container {
+  background-color: var(--color-blue-light);
+}
+
+.header-text-caption {
+  font-size: 12px;
+  color: var(--text-main);
+  background-color: var(--color-blue-light);
+}
+
+.specialist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
+.specialist-work-type {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+}
+</style>

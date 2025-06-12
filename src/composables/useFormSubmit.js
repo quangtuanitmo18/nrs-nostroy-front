@@ -62,7 +62,6 @@ export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
     onError: (error, variables) => {
       isSuccess.value = false
       submitError.value = error
-      console.log('Form submission error:', error)
 
       if (onError) {
         onError(error)
