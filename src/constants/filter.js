@@ -20,7 +20,7 @@ export const SPECIALIST_WORK_TYPE = [
   },
 ]
 
-export const SPECIALLIST_STATUS = [
+export const SPECIALIST_STATUS_MAP = [
   {
     value: 'active',
     title: 'Действует',

@@ -110,6 +110,7 @@ body {
   strong {
     font-weight: 500;
   }
+  background-color: var(--color-blue-light);
 }
 
 .body {
@@ -117,7 +118,7 @@ body {
   padding: 20px;
   margin-right: auto;
   margin-left: auto;
-
+  background-color: var(--color-blue-light);
   @media (min-width: 960px) {
     max-width: 900px;
   }
@@ -139,15 +140,23 @@ body {
   @media (min-width: 576px) {
     max-width: 540px;
   }
-
+  @media (min-width: 640px) {
+    max-width: 600px;
+  }
   @media (min-width: 768px) {
     max-width: 720px;
   }
 
+  @media (min-width: 880px) {
+    max-width: 840px;
+  }
   @media (min-width: 992px) {
     max-width: 960px;
   }
 
+  @media (min-width: 1024px) {
+    max-width: 1000px;
+  }
   @media (min-width: 1200px) {
     max-width: 1140px;
   }

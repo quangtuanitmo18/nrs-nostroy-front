@@ -9,14 +9,14 @@ export default createVuetify({
   directives,
   defaults: {
     // Настройки по умолчанию для компонентов
-    VTextField: {
-      variant: 'outlined',
-      density: 'comfortable',
-      // outlined: false,
-      hideDetails: 'auto',
-      // focused: false,
-      style: 'outline ',
-    },
+    // VTextField: {
+    //   variant: 'outlined',
+    //   density: 'comfortable',
+    //   // outlined: false,
+    //   hideDetails: 'auto',
+    //   // focused: false,
+    //   style: 'outline ',
+    // },
     VSelect: {
       variant: 'outlined',
       density: 'comfortable',
@@ -41,10 +41,7 @@ export default createVuetify({
     VRadio: {
       density: 'comfortable',
     },
-    VBtn: {
-      variant: 'elevated',
-      density: 'comfortable',
-    },
+
     VCard: {
       variant: 'elevated',
     },

@@ -14,10 +14,13 @@ const emailRule = string()
   .transform(value => value?.trim().toLowerCase())
 
 const phonenumberRussianRule = string()
-  .optional()
-  .matches(
-    /^\+7 \(\d{3}\) \(\d{3}\) \d{2}-\d{2}$/,
-    'Телефон должен быть в формате +7 (XXX) (XXX) XX-XX'
-  )
+  .transform(value => (value?.trim() === '' ? undefined : value))
+  .nullable()
+  .test('phone-format', 'Телефон должен быть в формате +7 (XXX) (XXX) XX-XX', value => {
+    if (!value || value.trim() === '') {
+      return true
+    }
+    return /^\+7 \(\d{3}\) \(\d{3}\) \d{2}-\d{2}$/.test(value)
+  })
 
 export { emailRule, phonenumberRussianRule }

@@ -1,4 +1,4 @@
-import { isObject } from 'lodash'
+import isObject from 'lodash/isObject'
 import { computed, ref } from 'vue'
 
 export function useApiErrors() {
