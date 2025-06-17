@@ -48,16 +48,9 @@
 
         <!-- Кнопка отправки -->
         <div class="d-flex">
-          <v-btn
-            type="submit"
-            color="primary"
-            variant="elevated"
-            size="large"
-            :loading="isSubmitting"
-            class="mt-4"
-          >
+          <BtnPrimary type="submit" size="large" :loading="isSubmitting" class="mt-4">
             Отправить
-          </v-btn>
+          </BtnPrimary>
         </div>
 
         <!-- Пояснение -->
@@ -100,6 +93,7 @@ import { notificationBySnilsSchema } from '@/schemas/notification'
 import { useQueryGenerateCaptcha } from '@/services/notification'
 import { cleanFormData } from '@/utils/formData'
 import maskaRules from '@/utils/RulesMaskaInput'
+import BtnPrimary from '@/components/button/BtnPrimary.vue'
 
 // Notifications
 const showSuccessMessage = ref(false)
@@ -174,6 +168,6 @@ watch(
 .notification-form {
   max-width: 600px;
   margin: 0 auto;
-  background-color: var(--color-blue-light);
+  background-color: var(--color-white);
 }
 </style>

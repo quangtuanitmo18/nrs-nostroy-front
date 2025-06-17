@@ -30,7 +30,7 @@ const cachedViews = []
   flex: 1;
 }
 .main {
-  background-color: #f1f4f6;
+  background-color: var(--color-white);
   padding: 20px;
   min-height: calc(100vh - 60px);
 }

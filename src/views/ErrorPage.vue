@@ -53,7 +53,7 @@ function goBack() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-blue-light);
+  background-color: var(--color-white);
 }
 
 .error-container {

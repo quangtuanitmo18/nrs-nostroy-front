@@ -23,11 +23,18 @@ $body-font-family: 'Neusa Next Pro', sans-serif;
   --text-warning: #fc6815;
   --text-highlight: #820711;
   // Color primary in format rgb, it's important!
-  --color-primary: 3, 60, 115;
+  /* --color-primary: 3, 60, 115; */
+  --color-primary: rgba(0, 0, 0, 0.54);
+
   --color-blue-dark: #3d7bb3;
   --color-blue-dark-2: #2f75aa;
 
+  --color-gray-primary: rgba(0, 0, 0, 0.54);
+  --color-gray-light: rgb(236, 238, 240);
+
   --color-blue-light: #eef3f9;
+  --color-white: #ffffff;
+  --color-white-secondary: #f5f5f5;
 
   --color-profile: linear-gradient(
     to left,
@@ -39,6 +46,8 @@ $body-font-family: 'Neusa Next Pro', sans-serif;
   --color-secondary: #495057aa;
   --color-warning-table: #f39c126b;
   --color-success-table: #73a8396b;
+
+  --color-badge: #ff5722;
 
   //Overwrite font vue date picker
   --dp-font-family: 'Neusa Next Pro', sans-serif !important;
@@ -65,11 +74,11 @@ html {
   box-sizing: border-box;
 }
 
-button,
 input {
-  outline: none;
-  background-color: transparent;
-  border: none;
+  border-color: rgb(236, 238, 240) !important;
+}
+
+button {
   font-family:
     'Neusa Next Pro',
     sans serif !important;
@@ -110,7 +119,7 @@ body {
   strong {
     font-weight: 500;
   }
-  background-color: var(--color-blue-light);
+  background-color: var(--color-white);
 }
 
 .body {
@@ -118,7 +127,7 @@ body {
   padding: 20px;
   margin-right: auto;
   margin-left: auto;
-  background-color: var(--color-blue-light);
+  background-color: var(--color-white);
   @media (min-width: 960px) {
     max-width: 900px;
   }
@@ -135,7 +144,7 @@ body {
   padding: 0 16px;
   margin-right: auto;
   margin-left: auto;
-  background-color: var(--color-blue-light);
+  background-color: var(--color-white);
 
   @media (min-width: 576px) {
     max-width: 540px;
@@ -158,11 +167,11 @@ body {
     max-width: 1000px;
   }
   @media (min-width: 1200px) {
-    max-width: 1140px;
+    max-width: 1080px;
   }
 
   @media (min-width: 1400px) {
-    max-width: 1320px;
+    max-width: 1280px;
   }
 
   @media (min-width: 1600px) {
@@ -170,7 +179,7 @@ body {
   }
 
   @media (min-width: 1800px) {
-    max-width: 1560px;
+    max-width: 1460px;
   }
 
   &.container--fluid {
@@ -396,7 +405,8 @@ body .v-list-item--density-default.v-list-item--one-line {
 
 button.bg-primary,
 .text-primary {
-  --v-theme-primary: var(--color-primary);
+  color: var(--color-gray-primary) !important;
+  background-color: rgb(236, 238, 240) !important;
 }
 
 button.bg-primary.danger {
@@ -413,7 +423,7 @@ button.bg-primary.danger {
 
 button.text-primary,
 a.text-primary {
-  color: rgb(var(--color-primary)) !important;
+  color: var(--color-gray-primary) !important;
 }
 
 .v-selection-control-group--inline {
@@ -489,9 +499,9 @@ table {
   font-size: 16px;
 }
 
-.table tbody > tr:nth-child(2n + 1) {
+/* .table tbody > tr:nth-child(2n + 1) {
   background-color: #f5f5f5;
-}
+} */
 
 .table.view-detail tbody > tr:hover {
   cursor: pointer;
@@ -813,8 +823,7 @@ div.v-list-item__append > .v-icon {
 }
 
 // Overwrite vue date picker
-div.dp__range_end,
-div.dp__range_start,
+
 div.dp__active_date,
 div.dp__overlay_cell_active,
 button.dp__action_select,
