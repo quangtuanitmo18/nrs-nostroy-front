@@ -65,8 +65,8 @@ export const columns = [
     heading: 'Дата принятия решения об исключении сведений из реестра',
     value: 'suspensionProtocolDate',
     sortOptions: {
-      sortable: true,
-      sortByValue: 'suspensionProtocolDate',
+      // sortable: true,
+      // sortByValue: 'suspensionProtocolDate',
     },
     filterOptions: {
       filterByValue: 'suspensionProtocolDate',
@@ -87,10 +87,10 @@ export const columns = [
     value: 'statusTitle',
     sortOptions: {
       sortable: true,
-      sortByValue: 'statusTitle',
+      sortByValue: 'suspensionProtocolDate',
     },
     filterOptions: {
-      filterByValue: 'statusTitle',
+      filterByValue: 'status',
       filterType: FILTER_TYPE_EQ,
       filterValues: SPECIALIST_STATUS_MAP,
     },

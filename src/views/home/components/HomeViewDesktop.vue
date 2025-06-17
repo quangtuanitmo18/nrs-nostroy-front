@@ -1,5 +1,5 @@
 <template>
-  <AnonamisTableFilter
+  <TableWithFilter
     :columns="columns"
     :items="list"
     :pagination="pagination"
@@ -11,12 +11,13 @@
     :setSort="setSort"
     :setFilter="setFilter"
     :setSearch="setSearch"
+    :isLoading="isFirstLoading"
     @clear-all-settings="emit('clear-all-settings')"
-  ></AnonamisTableFilter>
+  ></TableWithFilter>
 </template>
 
 <script setup>
-import { AnonamisTableFilter } from 'anonamis'
+import TableWithFilter from '@/components/table/TableWithFilter.vue'
 import { columns } from './TableColumns.js'
 
 const props = defineProps({
@@ -59,6 +60,10 @@ const props = defineProps({
   setSearch: {
     type: Function,
     required: true,
+  },
+  isFirstLoading: {
+    type: Boolean,
+    default: false,
   },
 })
 const emit = defineEmits(['clear-all-settings'])

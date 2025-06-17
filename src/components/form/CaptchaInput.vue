@@ -65,8 +65,6 @@ const props = defineProps({
   },
 })
 
-console.log('CaptchaInput props:', props.captchaUrl)
-
 const { value, errorMessage, meta } = useField(() => props.name)
 
 const shouldShowError = computed(() => {

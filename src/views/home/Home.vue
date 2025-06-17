@@ -1,7 +1,7 @@
 <template>
   <div class="position-relative header-container">
     <v-row>
-      <v-col cols="12" sm="6" class="ml-auto">
+      <v-col cols="12" sm="6" class="ml-auto mt-4">
         <div class="header-text-caption d-none d-md-block">
           * - Считать решения о включении сведений о физических лицах, включенных в Национальный
           реестр специалистов в области строительства до вступления в силу Федерального закона от
@@ -11,11 +11,11 @@
         </div>
       </v-col>
     </v-row>
-    <div v-if="isLoadingSpecialists && !list.length" class="mt-8">
+    <!-- <div v-if="isLoadingSpecialists" class="mt-8">
       <LoadingSpin />
-    </div>
+    </div> -->
 
-    <template v-if="!isLoadingSpecialists || list.length">
+    <keep-alive>
       <div class="my-6 position-relative table-container">
         <!-- Table view (hidden on md and down) -->
         <div class="d-none d-lg-block">
@@ -30,12 +30,15 @@
             :setSort="setSort"
             :setFilter="setFilter"
             :setSearch="setSearch"
+            :isLoading="isLoadingSpecialists"
             @clear-all-settings="handleClearAllSettings"
           ></HomeViewDesktop>
         </div>
       </div>
+    </keep-alive>
 
-      <!-- Mobile view -->
+    <!-- Mobile view -->
+    <keep-alive>
       <div class="d-lg-none my-6 position-relative">
         <!-- Card view (shown only on md and down) -->
         <HomeViewMobile
@@ -49,20 +52,20 @@
           :setSort="setSort"
           :setFilter="setFilter"
           :setSearch="setSearch"
+          :isLoading="isLoadingSpecialists"
           @clear-all-settings="handleClearAllSettings"
         ></HomeViewMobile>
       </div>
-    </template>
+    </keep-alive>
   </div>
 </template>
 
 <script setup>
 import appConfig from '@/configs/app'
 import { useQueryGetListSpecialists } from '@/services/specialist.js'
-import { computed, ref, shallowRef, toRaw, watch } from 'vue'
+import { computed, KeepAlive, ref, shallowRef, watch } from 'vue'
 import HomeViewDesktop from './components/HomeViewDesktop.vue'
 import HomeViewMobile from './components/HomeViewMobile.vue'
-import LoadingSpin from '@/components/loading/LoadingSpin.vue'
 
 const list = ref([])
 const page = ref(1)
@@ -88,9 +91,7 @@ const {
   isFetchingSpecialists,
 } = useQueryGetListSpecialists(queryParams)
 
-console.log('isloadingSpecialists', isLoadingSpecialists.value)
-
-const searchHint = 'Поиск по ФИО и Идентификационному номеру'
+// const searchHint = 'Поиск по ФИО и Идентификационному номеру'
 
 const pagination = shallowRef({})
 
@@ -148,9 +149,7 @@ watch([page, sort, filters, search, size], () => {
 watch(
   dataListSpecialists,
   newDataListSpecialists => {
-    console.log('query params', toRaw(queryParams.value))
     if (newDataListSpecialists && newDataListSpecialists.data) {
-      console.log('newDataListSpecialists', toRaw(newDataListSpecialists))
       list.value = newDataListSpecialists.data.items || []
       pagination.value = {
         count: newDataListSpecialists.data.data_header?.count || 0,
@@ -169,13 +168,13 @@ watch(
   transition: all 0.3s ease;
 }
 .header-container {
-  background-color: var(--color-blue-light);
+  background-color: var(--color-white);
 }
 
 .header-text-caption {
   font-size: 12px;
   color: var(--text-main);
-  background-color: var(--color-blue-light);
+  background-color: var(--color-white);
 }
 
 .specialist-card:hover {

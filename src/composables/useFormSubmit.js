@@ -88,7 +88,6 @@ export function useFormSubmit(initialValues, schema, submitFn, options = {}) {
     }
     const extraDataValue = typeof extraData === 'function' ? extraData() : extraData
 
-    console.log('Submitting form with values:', { ...formValues, ...extraDataValue })
     await mutation.mutateAsync({ ...formValues, ...extraDataValue })
   })
 

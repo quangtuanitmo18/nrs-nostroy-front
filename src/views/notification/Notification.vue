@@ -3,24 +3,22 @@
     <!-- Menu Tabs -->
     <div class="notification__wrapper">
       <div class="d-flex">
-        <v-btn
-          color="primary"
-          :variant="activeTab === 'snils' ? 'flat' : 'tonal'"
+        <BtnPrimary
+          :variant="activeTab === 'snils' ? 'tonal' : 'flat'"
           class="rounded-0"
           :class="{ 'active-tab': activeTab === 'snils' }"
           @click="switchTab('snils')"
         >
           по номеру СНИЛС
-        </v-btn>
-        <v-btn
-          color="primary"
-          :variant="activeTab === 'fio' ? 'flat' : 'tonal'"
+        </BtnPrimary>
+        <BtnPrimary
+          :variant="activeTab === 'fio' ? 'tonal' : 'flat'"
           class="rounded-0"
           :class="{ 'active-tab': activeTab === 'fio' }"
           @click="switchTab('fio')"
         >
           по ФИО
-        </v-btn>
+        </BtnPrimary>
       </div>
     </div>
 
@@ -34,8 +32,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import NotificationBySnils from './NotificationBySnils.vue'
 import NotificationByFio from './NotificationByFio.vue'
+import NotificationBySnils from './NotificationBySnils.vue'
+import BtnPrimary from '@/components/button/BtnPrimary.vue'
 
 const activeTab = ref('snils') // Default active tab
 
@@ -48,7 +47,7 @@ const switchTab = tab => {
 .notification__wrapper {
   margin-block: 24px;
   width: 100%;
-  border-bottom: 1px solid var(--color-blue-dark);
+  border-bottom: 2px solid var(--color-white-secondary);
 }
 .active-tab {
   font-weight: bold;
